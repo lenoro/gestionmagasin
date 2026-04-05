@@ -115,7 +115,7 @@ const S = {
   inputRO: { padding: '3px 6px', fontSize: 13, border: '1px solid #ccc', borderRadius: 2, width: '100%', fontFamily: 'inherit', background: '#f0f0f0', color: '#444' },
   select:  { padding: '3px 6px', fontSize: 13, border: '1px solid #aaa', borderRadius: 2, width: '100%', fontFamily: 'inherit', background: '#fff' },
   btn:     { padding: '4px 14px', fontSize: 13, border: '1px solid #888', borderRadius: 3, background: '#e8e8e8', cursor: 'pointer', fontFamily: 'inherit', minWidth: 90 },
-  btnNav:  { width: 26, height: 24, fontSize: 12, border: '1px solid #aaa', background: '#e8e8e8', cursor: 'pointer', borderRadius: 2 },
+  btnNav:  { width: 52, height: 48, fontSize: 18, border: '1px solid #aaa', background: '#e8e8e8', cursor: 'pointer', borderRadius: 2 },
   cell:    { padding: '3px 6px', fontSize: 13, borderBottom: '1px solid #ddd', verticalAlign: 'middle' },
 };
 
@@ -294,11 +294,11 @@ export default function OrderForm({ navigate }) {
     <div style={{ fontFamily: 'Tahoma, Arial, sans-serif', fontSize: 13, background: '#f0f0f0', minHeight: '100vh', padding: '1rem' }}>
 
       {/* ── Fenêtre principale style Delphi ── */}
-      <div style={{ maxWidth: 640, margin: '0 auto', background: '#f0f0f0', border: '2px solid #888', borderRadius: 4, boxShadow: '3px 3px 8px rgba(0,0,0,0.3)' }}>
+      <div style={{ maxWidth: 716, margin: '0 auto', background: '#f0f0f0', border: '2px solid #888', borderRadius: 4, boxShadow: '3px 3px 8px rgba(0,0,0,0.3)' }}>
 
         {/* Barre de titre */}
         <div style={{ background: 'linear-gradient(to right, #0a246a, #a6b8d8)', padding: '3px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>Order Form</span>
+          <span style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>Affectation</span>
           <div style={{ display: 'flex', gap: 2 }}>
             <button onClick={() => navigate('accueil')} style={{ width: 16, height: 14, fontSize: 10, background: '#c0c0c0', border: '1px solid #888', cursor: 'pointer', lineHeight: 1 }}>─</button>
             <button style={{ width: 16, height: 14, fontSize: 10, background: '#c0c0c0', border: '1px solid #888', cursor: 'pointer', lineHeight: 1 }}>□</button>
@@ -341,9 +341,9 @@ export default function OrderForm({ navigate }) {
           </div>
 
           {/* ── Bill To / CustNo / Ship To / Date ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 80px 2fr 120px 36px', gap: 6, marginBottom: 6 }}>
-            <div>
-              <span style={S.label}>Bill To</span>
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 80px 120px 36px', gap: 6, marginBottom: 6 }}>
+            <div style={{ width: 180 }}>
+              <span style={S.label}>Destinataire</span>
               <select style={{ ...S.select, ...(errors.clientId ? { border: '1px solid #c00', background: '#fff0f0' } : {}) }}
                 value={cmd.clientId}
                 onChange={e => { setField('clientId', e.target.value); setErrors(ev => ({ ...ev, clientId: undefined })); }}>
@@ -352,14 +352,8 @@ export default function OrderForm({ navigate }) {
               {errors.clientId && <span style={{ fontSize: 11, color: '#c00' }}>{errors.clientId}</span>}
             </div>
             <div>
-              <span style={S.label}>CustNo</span>
+              <span style={S.label}>Clé</span>
               <input style={S.inputRO} readOnly value={cmd.clientId} />
-            </div>
-            <div>
-              <span style={S.label}>Ship To</span>
-              <input style={S.input} value={cmd.shipTo}
-                onChange={e => setField('shipTo', e.target.value)}
-                placeholder={client.clientName} />
             </div>
             <div>
               <span style={S.label}>Date</span>
@@ -374,37 +368,22 @@ export default function OrderForm({ navigate }) {
           </div>
 
           {/* ── Adresse client (lecture seule, tirée du client sélectionné) ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 6 }}>
+          <div style={{ marginBottom: 6 }}>
             <input style={S.inputRO} readOnly value={client.address} />
-            <input style={S.inputRO} readOnly value={cmd.shipTo || client.address} />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 1fr 60px', gap: 6, marginBottom: 6 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 6 }}>
             <input style={S.inputRO} readOnly value={client.phone} />
-            <input style={S.inputRO} readOnly value="" />
-            <input style={S.inputRO} readOnly value="" />
             <input style={S.inputRO} readOnly value="" />
           </div>
 
           {/* ── SoldBy / Terms / Payment / ShipVia / PO# ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 90px 1.2fr 1fr 1fr', gap: 6, marginBottom: 8 }}>
-            {[
-              { label: 'SoldBy',         field: 'vendeur',      opts: VENDEURS      },
-              { label: 'Terms',          field: 'termes',       opts: TERMES        },
-              { label: 'Payment Method', field: 'paiement',     opts: PAIEMENTS     },
-              { label: 'ShipVia',        field: 'transporteur', opts: TRANSPORTEURS },
-            ].map(f => (
-              <div key={f.field}>
-                <span style={S.label}>{f.label}</span>
-                <select style={S.select} value={cmd[f.field]?.vendorName || cmd[f.field] || ''}
-                  onChange={e => setField(f.field, e.target.value)}>
-                  {f.opts.map(o => <option key={o}>{o}</option>)}
-                </select>
-              </div>
-            ))}
-            <div>
-              <span style={S.label}>PO#</span>
-              <input style={S.input} value={cmd.poNum}
-                onChange={e => setField('poNum', e.target.value)} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1.5fr', gap: 6, marginBottom: 8 }}>
+            <div style={{ width: 180 }}>
+              <span style={S.label}>Fait par</span>
+              <select style={S.select} value={cmd.vendeur?.vendorName || cmd.vendeur || ''}
+                onChange={e => setField('vendeur', e.target.value)}>
+                {VENDEURS.map(o => <option key={o}>{o}</option>)}
+              </select>
             </div>
           </div>
 
@@ -414,12 +393,12 @@ export default function OrderForm({ navigate }) {
               <thead>
                 <tr style={{ background: '#d4d0c8' }}>
                   <th style={{ width: 16, padding: '2px 4px', borderRight: '1px solid #aaa' }}></th>
-                  <th style={{ padding: '2px 8px', textAlign: 'left', borderRight: '1px solid #aaa', fontWeight: 600 }}>PartNo</th>
+                  <th style={{ padding: '2px 8px', textAlign: 'left', borderRight: '1px solid #aaa', fontWeight: 600 }}>N° article</th>
                   <th style={{ padding: '2px 8px', textAlign: 'left', borderRight: '1px solid #aaa', fontWeight: 600 }}>Description</th>
-                  <th style={{ padding: '2px 8px', textAlign: 'right', borderRight: '1px solid #aaa', fontWeight: 600 }}>SellPrice</th>
+                  <th style={{ padding: '2px 8px', textAlign: 'right', borderRight: '1px solid #aaa', fontWeight: 600 }}>Prix U</th>
                   <th style={{ padding: '2px 8px', textAlign: 'center', borderRight: '1px solid #aaa', fontWeight: 600 }}>Qty</th>
-                  <th style={{ padding: '2px 8px', textAlign: 'right', borderRight: '1px solid #aaa', fontWeight: 600 }}>Discount</th>
-                  <th style={{ padding: '2px 8px', textAlign: 'right', fontWeight: 600 }}>ExtPrice</th>
+                  <th style={{ display: 'none' }}>Discount</th>
+                  <th style={{ padding: '2px 8px', textAlign: 'right', fontWeight: 600 }}>Total</th>
                   {editing && <th style={{ width: 24 }}></th>}
                 </tr>
               </thead>
@@ -459,12 +438,7 @@ export default function OrderForm({ navigate }) {
                             style={{ ...S.input, width: 50, textAlign: 'center', ...(errors[`item_${i}_qty`] ? { border: '1px solid #c00', background: '#fff0f0' } : {}) }} />
                         : l.quantity}
                     </td>
-                    <td style={{ ...S.cell, textAlign: 'right', color: l.remise > 0 ? '#cc0000' : '#000', borderRight: '1px solid #eee' }}>
-                      {editing
-                        ? <input type="number" min="0" max="100" value={l.remise} onChange={e => { updateLigne(l.id, 'remise', parseFloat(e.target.value) || 0); setErrors(ev => ({ ...ev, [`item_${i}_remise`]: undefined })); }}
-                            style={{ ...S.input, width: 60, textAlign: 'right', ...(errors[`item_${i}_remise`] ? { border: '1px solid #c00', background: '#fff0f0' } : {}) }} />
-                        : (l.remise || 0).toFixed(2) + '%'}
-                    </td>
+                    <td style={{ display: 'none' }}></td>
                     <td style={{ ...S.cell, textAlign: 'right', background: '#dbeafe', fontWeight: 600 }}>
                       {calcLigne(l).toFixed(2)} $
                     </td>
@@ -516,26 +490,9 @@ export default function OrderForm({ navigate }) {
 
             {/* Totaux */}
             <div style={{ flex: 1 }}>
-              {[
-                { label: 'Subtotal', val: totaux.subtotal.toFixed(2) + ' $', ro: true },
-                { label: `Tax ${cmd.taxRate}%`, val: totaux.tax.toFixed(2) + ' $', ro: true },
-                { label: 'Freight', val: null, field: 'freight' },
-                { label: 'Paid',    val: null, field: 'paid'    },
-              ].map(row => (
-                <div key={row.label} style={{ display: 'flex', alignItems: 'center', marginBottom: 4, gap: 6 }}>
-                  <span style={{ fontSize: 12, width: 80, textAlign: 'right', color: '#444' }}>{row.label}</span>
-                  {row.ro
-                    ? <input readOnly value={row.val} style={{ ...S.inputRO, width: 110, textAlign: 'right' }} />
-                    : <input type="number" min="0" step="0.01"
-                        value={cmd[row.field]}
-                        onChange={e => setField(row.field, parseFloat(e.target.value) || 0)}
-                        style={{ ...S.input, width: 110, textAlign: 'right' }} />
-                  }
-                </div>
-              ))}
               {/* Due — en gras */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                <span style={{ fontSize: 13, fontWeight: 700, width: 80, textAlign: 'right' }}>Due</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2, justifyContent: 'flex-end', marginRight: 20 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, textAlign: 'right' }}>Total Général</span>
                 <input readOnly value={totaux.due.toFixed(2) + ' $'}
                   style={{ ...S.inputRO, width: 110, textAlign: 'right', fontWeight: 700,
                     color: totaux.due > 0 ? '#c00' : '#060' }} />
@@ -544,9 +501,9 @@ export default function OrderForm({ navigate }) {
 
             {/* Boutons action */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingTop: 4 }}>
-              <button style={{ ...S.btn, opacity: editing && !saving ? 1 : 0.5 }} onClick={saveEdits} disabled={!editing || saving}>{saving ? '⏳...' : 'Save Edits'}</button>
-              <button style={{ ...S.btn, opacity: editing ? 1 : 0.5 }} onClick={cancelEdits} disabled={!editing}>Cancel Edits</button>
-              <button style={S.btn} onClick={() => navigate('accueil')}>Close</button>
+              <button style={{ ...S.btn, opacity: editing && !saving ? 1 : 0.5 }} onClick={saveEdits} disabled={!editing || saving}>{saving ? '⏳...' : 'Sauvegarder'}</button>
+              <button style={{ ...S.btn, opacity: editing ? 1 : 0.5 }} onClick={cancelEdits} disabled={!editing}>Annuler</button>
+              <button style={S.btn} onClick={() => navigate('accueil')}>Fermer</button>
             </div>
           </div>
 

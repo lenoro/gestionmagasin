@@ -7,9 +7,9 @@ import PrintPreview from '../components/PrintPreview';
 import { ClientAPI, ArticleAPI, FactureAPI } from '../data/api';
 
 const REPORTS = [
-  { key: 'customers', label: 'Customers Report' },
-  { key: 'orders',    label: 'Orders Report'    },
-  { key: 'invoice',   label: 'Invoice Report'   },
+  { key: 'customers', label: 'État Employés'           },
+  { key: 'orders',    label: 'État des affectations'   },
+  { key: 'invoice',   label: 'État des Factures'        },
 ];
 
 const S = {
@@ -60,7 +60,7 @@ export default function Etats({ navigate }) {
 
           {/* Barre de titre */}
           <div style={S.titleBar}>
-            <span style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>Report Selection</span>
+            <span style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>Choix Rapports</span>
             <button onClick={() => navigate('accueil')} style={{ width: 16, height: 14, fontSize: 10, background: '#c0c0c0', border: '1px solid #888', cursor: 'pointer', color: '#900', fontWeight: 700 }}>✕</button>
           </div>
 
@@ -68,7 +68,7 @@ export default function Etats({ navigate }) {
 
             {/* GroupBox Report */}
             <div style={{ flex: 1, border: '1px solid #aaa', borderRadius: 3, padding: '10px 14px', position: 'relative' }}>
-              <span style={{ position: 'absolute', top: -9, left: 8, background: '#f0f0f0', padding: '0 4px', fontSize: 12, fontWeight: 600 }}>Report</span>
+              <span style={{ position: 'absolute', top: -9, left: 8, background: '#f0f0f0', padding: '0 4px', fontSize: 12, fontWeight: 600 }}>Rapport</span>
               {REPORTS.map(r => (
                 <label key={r.key} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, cursor: 'pointer', fontSize: 13 }}>
                   <input
@@ -87,13 +87,13 @@ export default function Etats({ navigate }) {
             {/* Boutons Print / View / Cancel */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, paddingTop: 4 }}>
               <button style={{ ...S.btnPrint, opacity: loading ? 0.6 : 1 }} onClick={() => !loading && setPreview(true)} disabled={loading}>
-                {loading ? '⏳' : <><span style={{ textDecoration: 'underline' }}>P</span>rint</>}
+                {loading ? '⏳' : 'Imprimer'}
               </button>
               <button style={{ ...S.btn, opacity: loading ? 0.6 : 1 }} onClick={() => !loading && setPreview(true)} disabled={loading}>
-                {loading ? '⏳' : <><span style={{ textDecoration: 'underline' }}>V</span>iew</>}
+                {loading ? '⏳' : 'Afficher'}
               </button>
               <button style={S.btn} onClick={() => navigate('accueil')}>
-                <span style={{ textDecoration: 'underline' }}>C</span>ancel
+                Annuler
               </button>
             </div>
 

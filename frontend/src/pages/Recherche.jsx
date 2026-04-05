@@ -10,8 +10,8 @@ import SpecifyDateRange from '../components/SpecifyDateRange';
 const F = {
   win:       { fontFamily: 'Tahoma, Arial, sans-serif', fontSize: 13, background: '#f0f0f0', minHeight: '100vh', padding: '1rem' },
   titleBar:  { background: 'linear-gradient(to right, #0a246a, #a6b8d8)', padding: '3px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-  btnNav:    { width: 26, height: 24, fontSize: 12, border: '1px solid #aaa', background: '#e8e8e8', cursor: 'pointer', borderRadius: 2, fontFamily: 'inherit' },
-  btnAction: { padding: '4px 0', width: 100, fontSize: 12, border: '1px solid #888', borderRadius: 3, background: '#e8e8e8', cursor: 'pointer', fontFamily: 'inherit' },
+  btnNav:    { width: 52, height: 48, fontSize: 18, border: '1px solid #aaa', background: '#e8e8e8', cursor: 'pointer', borderRadius: 2, fontFamily: 'inherit' },
+  btnAction: { padding: '4px 0', width: 100, height: 48, fontSize: 12, border: '1px solid #888', borderRadius: 3, background: '#e8e8e8', cursor: 'pointer', fontFamily: 'inherit' },
   grid:      { width: '100%', borderCollapse: 'collapse', fontSize: 13 },
   th:        { padding: '3px 8px', textAlign: 'left', background: '#d4d0c8', fontWeight: 600, borderRight: '1px solid #aaa', borderBottom: '1px solid #aaa', whiteSpace: 'nowrap' },
   td: sel => ({ padding: '3px 8px', borderBottom: '1px solid #eee', borderRight: '1px solid #eee', background: sel ? '#0a246a' : 'transparent', color: sel ? '#fff' : '#000', cursor: 'pointer', whiteSpace: 'nowrap' }),
@@ -179,7 +179,7 @@ export default function Recherche({ navigate }) {
         <div style={F.titleBar}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ fontSize: 14 }}>📋</span>
-            <span style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>Orders By Customer</span>
+            <span style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>Affectation par Employé</span>
           </div>
           <div style={{ display: 'flex', gap: 2 }}>
             <button style={{ width: 16, height: 14, fontSize: 10, background: '#c0c0c0', border: '1px solid #888', cursor: 'pointer' }}>─</button>
@@ -217,7 +217,7 @@ export default function Recherche({ navigate }) {
                 onClick={handleDefineQuery}
                 title="Définir les paramètres de la requête"
               >
-                Define Query
+                Définir Requête
               </button>
 
               {/* Activate Query — bouton bascule enfoncé/relevé */}
@@ -234,7 +234,7 @@ export default function Recherche({ navigate }) {
                 onClick={handleActivateQuery}
                 title={queryActive ? 'Désactiver la requête' : 'Activer la requête'}
               >
-                {queryActive ? '▣' : '□'} Activate Query
+                Exécuter Requête
               </button>
             </div>
           </div>
@@ -270,10 +270,10 @@ export default function Recherche({ navigate }) {
               <thead>
                 <tr>
                   <th style={{ ...F.th, width: 16 }}></th>
-                  <th style={{ ...F.th, width: 70 }}>CustNo</th>
-                  <th style={F.th}>Company</th>
-                  <th style={F.th}>Phone</th>
-                  <th style={{ ...F.th, width: 110 }}>LastInvoice</th>
+                  <th style={{ ...F.th, width: 70 }}>Clé Em</th>
+                  <th style={F.th}>Employé</th>
+                  <th style={F.th}>Téléphone</th>
+                  <th style={{ ...F.th, width: 110 }}>Dernière Aff</th>
                 </tr>
               </thead>
               <tbody>
@@ -317,11 +317,11 @@ export default function Recherche({ navigate }) {
               <thead>
                 <tr>
                   <th style={{ ...F.th, width: 16 }}></th>
-                  <th style={{ ...F.th, width: 75 }}>OrderNo</th>
-                  <th style={{ ...F.th, width: 95 }}>SaleDate</th>
-                  <th style={{ ...F.th, width: 95 }}>ShipDate</th>
-                  <th style={{ ...F.th, textAlign: 'right' }}>AmountPaid</th>
-                  <th style={{ ...F.th, textAlign: 'right', borderRight: 'none' }}>AmountDue</th>
+                  <th style={{ ...F.th, width: 75 }}>N° Emp</th>
+                  <th style={{ ...F.th, width: 95 }}>Date</th>
+                  <th style={{ ...F.th, width: 95 }}>Date Effective</th>
+                  <th style={{ display: 'none' }}>AmountPaid</th>
+                  <th style={{ ...F.th, textAlign: 'right', borderRight: 'none' }}>Total</th>
                 </tr>
               </thead>
               <tbody>
@@ -338,7 +338,7 @@ export default function Recherche({ navigate }) {
                       <td style={{ ...F.td(sel), fontWeight: 600 }}>{cmd.id}</td>
                       <td style={{ ...F.td(sel), fontSize: 12 }}>{cmd.invoiceDate}</td>
                       <td style={{ ...F.td(sel), fontSize: 12 }}>{cmd.shipDate || '—'}</td>
-                      <td style={{ ...F.td(sel), textAlign: 'right' }}>{totaux.paid.toFixed(2)} $</td>
+                      <td style={{ display: 'none' }}></td>
                       <td style={{ ...F.td(sel), textAlign: 'right', color: sel ? '#fff' : totaux.due > 0 ? '#c00' : '#060', fontWeight: 600, borderRight: 'none' }}>
                         {totaux.due.toFixed(2)} $
                       </td>
@@ -399,10 +399,10 @@ export default function Recherche({ navigate }) {
               onClick={() => selectedClient && setEditClientId(selectedClient.id)}
               disabled={!selectedClient}
             >
-              <span style={{ textDecoration: 'underline' }}>E</span>dit
+              Modifier
             </button>
             <button style={{ ...F.btnAction, width: 80 }} onClick={() => navigate('accueil')}>
-              <span style={{ textDecoration: 'underline' }}>C</span>lose
+              Fermer
             </button>
           </div>
 

@@ -43,6 +43,16 @@ export default function Aides({ navigate }) {
         Consultez les questions fréquentes pour chaque section de GestionMagasin.
       </p>
 
+      <div style={{ marginBottom: '1.5rem' }}>
+        <a href="/aide.pdf" target="_blank" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          padding: '8px 18px', background: '#0a246a', color: '#fff',
+          borderRadius: 6, textDecoration: 'none', fontSize: 13, fontWeight: 600,
+        }}>
+          📄 Ouvrir le guide d'utilisation (PDF)
+        </a>
+      </div>
+
       {sections.map(s => (
         <div key={s.titre} style={{ marginBottom: 16 }}>
           <div style={{

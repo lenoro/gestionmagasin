@@ -7,8 +7,8 @@ import EditPart from '../components/EditPart';
 const F = {
   win:       { fontFamily: 'Tahoma, Arial, sans-serif', fontSize: 13, background: '#f0f0f0', minHeight: '100vh', padding: '1rem' },
   titleBar:  { background: 'linear-gradient(to right, #0a246a, #a6b8d8)', padding: '3px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-  btnNav:    { width: 26, height: 24, fontSize: 12, border: '1px solid #aaa', background: '#e8e8e8', cursor: 'pointer', borderRadius: 2, fontFamily: 'inherit' },
-  btnAction: { padding: '4px 0', width: 90, fontSize: 13, border: '1px solid #888', borderRadius: 3, background: '#e8e8e8', cursor: 'pointer', fontFamily: 'inherit' },
+  btnNav:    { width: 52, height: 48, fontSize: 18, border: '1px solid #aaa', background: '#e8e8e8', cursor: 'pointer', borderRadius: 2, fontFamily: 'inherit' },
+  btnAction: { padding: '4px 0', width: 90, height: 48, fontSize: 13, border: '1px solid #888', borderRadius: 3, background: '#e8e8e8', cursor: 'pointer', fontFamily: 'inherit' },
   th:        { padding: '3px 10px', textAlign: 'left', background: '#d4d0c8', fontWeight: 600, borderRight: '1px solid #aaa', borderBottom: '1px solid #aaa', whiteSpace: 'nowrap', userSelect: 'none' },
   td: sel => ({ padding: '3px 10px', borderBottom: '1px solid #eee', borderRight: '1px solid #eee', background: sel ? '#0a246a' : 'transparent', color: sel ? '#fff' : '#000', whiteSpace: 'nowrap' }),
 };
@@ -77,7 +77,7 @@ export default function Articles({ navigate }) {
         <div style={F.titleBar}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ fontSize: 14 }}>🔧</span>
-            <span style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>Browse Parts</span>
+            <span style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>Parcourir les articles</span>
           </div>
           <div style={{ display: 'flex', gap: 2 }}>
             <button style={{ width: 16, height: 14, fontSize: 10, background: '#c0c0c0', border: '1px solid #888', cursor: 'pointer' }}>─</button>
@@ -100,11 +100,11 @@ export default function Articles({ navigate }) {
 
             {/* Bouton Edit */}
             <button
-              style={{ ...F.btnAction }}
+              style={{ ...F.btnAction, marginLeft: '38px' }}
               onClick={() => selectedId && setEditPartId(selectedId)}
               disabled={!selectedId}
             >
-              <span style={{ textDecoration: 'underline' }}>E</span>dit
+              Modifier
             </button>
 
             {/* Bouton Backorders — bascule */}
@@ -121,7 +121,7 @@ export default function Articles({ navigate }) {
               onClick={() => setShowBackorders(b => !b)}
               title="Afficher uniquement les articles en backorder"
             >
-              <span style={{ textDecoration: 'underline' }}>B</span>ackorders
+              Indisponible
             </button>
 
             <span style={{ marginLeft: 'auto', fontSize: 11, color: '#666' }}>
@@ -155,11 +155,11 @@ export default function Articles({ navigate }) {
               <thead>
                 <tr>
                   <th style={{ ...F.th, width: 16, padding: '3px 4px' }}></th>
-                  <th style={{ ...F.th, width: 80 }}>PartNo</th>
+                  <th style={{ ...F.th, width: 80 }}>Clé article</th>
                   <th style={{ ...F.th, minWidth: 180 }}>Description</th>
-                  <th style={{ ...F.th, width: 70, textAlign: 'right' }}>OnHand</th>
+                  <th style={{ ...F.th, width: 70, textAlign: 'right' }}>Disponible</th>
                   <th style={{ ...F.th, width: 70, textAlign: 'right' }}>OnOrder</th>
-                  <th style={{ ...F.th, width: 70, textAlign: 'right', borderRight: 'none' }}>BackOrd</th>
+                  <th style={{ ...F.th, width: 70, textAlign: 'right', borderRight: 'none' }}>Indisponible</th>
                 </tr>
               </thead>
               <tbody>
@@ -231,7 +231,7 @@ export default function Articles({ navigate }) {
               style={{ ...F.btnAction, width: 80 }}
               onClick={() => navigate('accueil')}
             >
-              <span style={{ textDecoration: 'underline' }}>C</span>lose
+              Fermer
             </button>
           </div>
 
