@@ -1,8 +1,14 @@
 // src/pages/Accueil.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { EtablissementAPI } from '../data/api';
 
 export default function Accueil({ navigate }) {
   const [hovered, setHovered] = useState(null);
+  const [etab,    setEtab]    = useState(null);
+
+  useEffect(() => {
+    EtablissementAPI.get().then(setEtab).catch(() => {});
+  }, []);
 
   const boutons = [
     {
@@ -126,20 +132,18 @@ export default function Accueil({ navigate }) {
       gap: 32,
     }}>
 
-      {/* Titre */}
-      <div style={{ textAlign: 'center' }}>
-        <div style={{
-          width: 52, height: 52,
-          background: '#1a1a1a',
-          borderRadius: 12,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          margin: '0 auto 12px',
-        }}>
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
-            <path d="M3 3h18v2H3V3zm0 4h18v2H3V7zm0 4h18v2H3v-2zm0 4h12v2H3v-2z"/>
-          </svg>
-        </div>
-        <h1 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 4px' }}>GestionMagasin</h1>
+      {/* Titre établissement */}
+      <div style={{ textAlign: 'center', maxWidth: 520 }}>
+        {etab ? (
+          <>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#0a246a', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 3 }}>{etab.rep}</div>
+            <div style={{ fontSize: 12, color: '#444', marginBottom: 2 }}>{etab.ministere}</div>
+            <div style={{ fontSize: 12, color: '#555', marginBottom: 6 }}>{etab.wilaya}</div>
+            <h1 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a2e', margin: '0 0 4px' }}>{etab.centre}</h1>
+          </>
+        ) : (
+          <h1 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 4px' }}>Chargement…</h1>
+        )}
         <p style={{ fontSize: 13, color: '#888780', margin: 0 }}>Que souhaitez-vous faire ?</p>
       </div>
 
@@ -198,7 +202,7 @@ export default function Accueil({ navigate }) {
         ))}
       </div>
 
-      <p style={{ fontSize: 11, color: '#b4b2a9', margin: 0 }}>GestionMagasin v1.0 — © 2026</p>
+      <p style={{ fontSize: 11, color: '#b4b2a9', margin: 0 }}>{etab?.centre || 'GestionMagasin'} — © 2026</p>
     </div>
   );
 }

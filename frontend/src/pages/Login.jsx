@@ -1,11 +1,16 @@
-import { useState } from 'react';
-import { AuthAPI } from '../data/api';
+import { useState, useEffect } from 'react';
+import { AuthAPI, EtablissementAPI } from '../data/api';
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError]       = useState('');
-  const [loading, setLoading]   = useState(false);
+  const [error,    setError]    = useState('');
+  const [loading,  setLoading]  = useState(false);
+  const [etab,     setEtab]     = useState(null);
+
+  useEffect(() => {
+    EtablissementAPI.get().then(setEtab).catch(() => {});
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,7 +31,21 @@ export default function Login({ onLogin }) {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        <h1 style={styles.title}>🏪 Gestion Magasin</h1>
+
+        {/* En-tête établissement */}
+        <div style={styles.header}>
+          {etab ? (
+            <>
+              <div style={styles.rep}>{etab.rep}</div>
+              <div style={styles.ministere}>{etab.ministere}</div>
+              <div style={styles.wilaya}>{etab.wilaya}</div>
+              <div style={styles.centre}>{etab.centre}</div>
+            </>
+          ) : (
+            <div style={styles.centre}>Chargement…</div>
+          )}
+        </div>
+
         <p style={styles.subtitle}>Connectez-vous pour accéder à l'application</p>
 
         {error && <div style={styles.error}>{error}</div>}
@@ -69,12 +88,29 @@ const styles = {
     background: '#1a1a2e',
   },
   card: {
-    background: '#fff', padding: '3rem', borderRadius: '16px',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.3)', width: '100%', maxWidth: '400px',
+    background: '#fff', padding: '2rem 3rem', borderRadius: '16px',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.3)', width: '100%', maxWidth: '460px',
     textAlign: 'center',
   },
-  title: { margin: '0 0 0.5rem', color: '#1a1a2e', fontSize: '1.8rem' },
-  subtitle: { color: '#888', marginBottom: '2rem', fontSize: '0.95rem' },
+  header: {
+    borderBottom: '2px solid #0a246a',
+    paddingBottom: '1rem',
+    marginBottom: '1rem',
+  },
+  rep: {
+    fontSize: '0.75rem', fontWeight: 700, color: '#0a246a',
+    textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4,
+  },
+  ministere: {
+    fontSize: '0.78rem', color: '#333', marginBottom: 3,
+  },
+  wilaya: {
+    fontSize: '0.78rem', color: '#555', marginBottom: 6,
+  },
+  centre: {
+    fontSize: '1.1rem', fontWeight: 700, color: '#1a1a2e',
+  },
+  subtitle: { color: '#888', marginBottom: '1.5rem', fontSize: '0.9rem' },
   error: {
     background: '#ffeaea', color: '#d32f2f', padding: '10px',
     borderRadius: '8px', marginBottom: '1rem', fontSize: '0.9rem',

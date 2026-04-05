@@ -132,3 +132,12 @@ export const MouvementAPI = {
   getByArticle: (artId)   => fetch(`${BASE_URL}${API_PREFIX}/mouvements-stock/article/${artId}`,  { headers: h() }).then(r => r.json()).then(d => Array.isArray(d) ? d : []),
   ajuster:      (data)    => fetch(`${BASE_URL}${API_PREFIX}/mouvements-stock/ajuster`,           { method: 'POST', headers: h(), body: JSON.stringify(data) }).then(r => r.json()),
 };
+
+/* ══════════════════════════════════════
+   ETABLISSEMENT
+══════════════════════════════════════ */
+export const EtablissementAPI = {
+  get:    ()     => fetch(`${BASE_URL}${API_PREFIX}/etablissement`, { headers: h() }).then(r => r.ok ? r.json() : null).catch(() => null),
+  create: (data) => fetch(`${BASE_URL}${API_PREFIX}/etablissement`, { method: 'POST', headers: h(), body: JSON.stringify(data) }).then(r => r.json()),
+  update: (data) => fetch(`${BASE_URL}${API_PREFIX}/etablissement`, { method: 'PUT',  headers: h(), body: JSON.stringify(data) }).then(r => r.json()),
+};

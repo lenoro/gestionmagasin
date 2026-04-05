@@ -4,7 +4,7 @@ import { CLIENTS }                       from '../data/clients';
 import { ARTICLES }                      from '../data/articles';
 import { COMMANDES, calcCommandeTotaux } from '../data/commandes';
 import PrintPreview from '../components/PrintPreview';
-import { ClientAPI, ArticleAPI, FactureAPI } from '../data/api';
+import { ClientAPI, ArticleAPI, FactureAPI, EtablissementAPI } from '../data/api';
 
 const REPORTS = [
   { key: 'customers', label: 'État Employés'           },
@@ -25,6 +25,7 @@ export default function Etats({ navigate }) {
   const [apiClients,  setApiClients]  = useState(CLIENTS);
   const [apiArticles, setApiArticles] = useState(ARTICLES);
   const [apiCommandes,setApiCommandes]= useState(COMMANDES);
+  const [etab,        setEtab]        = useState(null);
   const [loading,     setLoading]     = useState(true);
 
   /* ── Charger toutes les données pour les rapports ── */
@@ -33,10 +34,12 @@ export default function Etats({ navigate }) {
       ClientAPI.getAll().catch(() => CLIENTS),
       ArticleAPI.getAll().catch(() => ARTICLES),
       FactureAPI.getAll().catch(() => COMMANDES),
-    ]).then(([c, a, f]) => {
+      EtablissementAPI.get().catch(() => null),
+    ]).then(([c, a, f, e]) => {
       setApiClients(c);
       setApiArticles(a);
       setApiCommandes(f);
+      setEtab(e);
     }).finally(() => setLoading(false));
   }, []);
 
@@ -49,6 +52,7 @@ export default function Etats({ navigate }) {
         articles={apiArticles}
         calcTotaux={calcCommandeTotaux}
         onClose={() => setPreview(false)}
+        etab={etab}
       />
     );
   }

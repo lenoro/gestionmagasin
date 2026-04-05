@@ -12,16 +12,25 @@ const HDR_BG = '#0a246a';
 const HDR_FG = '#ffffff';
 
 /* En-tête commun à toutes les pages */
-function ReportHeader({ title, subtitle, page, total }) {
+function ReportHeader({ title, subtitle, page, total, etab }) {
   return (
     <div style={{ marginBottom: 20 }}>
-      {/* Logo + titre */}
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 4 }}>
-        <div style={{ fontFamily: 'Times New Roman, serif', fontStyle: 'italic', fontWeight: 900, fontSize: 32, color: '#1a1a1a', letterSpacing: 1 }}>
-          GestionMagasin
+      {/* En-tête établissement */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+        <div style={{ flex: 1 }}>
+          {etab ? (
+            <>
+              <div style={{ fontSize: 9, fontWeight: 700, color: '#0a246a', textTransform: 'uppercase', letterSpacing: 0.5 }}>{etab.rep}</div>
+              <div style={{ fontSize: 9, color: '#333', marginTop: 1 }}>{etab.ministere}</div>
+              <div style={{ fontSize: 9, color: '#555', marginTop: 1 }}>{etab.wilaya}</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#1a1a1a', marginTop: 3 }}>{etab.centre}</div>
+            </>
+          ) : (
+            <div style={{ fontSize: 14, fontWeight: 700 }}>—</div>
+          )}
         </div>
         <div style={{ textAlign: 'right', fontSize: 10, color: '#666' }}>
-          Page {page} of {total}
+          Page {page} / {total}
         </div>
       </div>
       <div style={{ textAlign: 'center', marginBottom: 6 }}>
@@ -65,7 +74,7 @@ function TD({ children, align = 'left', bold, color, small }) {
 }
 
 /* ── Rapport Customers ── */
-function buildCustomersPages(clients) {
+function buildCustomersPages(clients, etab) {
   const ROWS_PER_PAGE = 14;
   const pages = [];
   const total = Math.ceil(clients.length / ROWS_PER_PAGE);
@@ -73,7 +82,7 @@ function buildCustomersPages(clients) {
     const slice = clients.slice(p * ROWS_PER_PAGE, (p + 1) * ROWS_PER_PAGE);
     pages.push(
       <div key={p}>
-        <ReportHeader title="Customer List" subtitle="By Last Invoice" page={p + 1} total={total} />
+        <ReportHeader title="Customer List" subtitle="By Last Invoice" page={p + 1} total={total} etab={etab} />
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
           <thead>
             <tr>
@@ -102,7 +111,7 @@ function buildCustomersPages(clients) {
         </table>
         {/* Pied de page */}
         <div style={{ marginTop: 12, borderTop: '1px solid #ccc', paddingTop: 6, fontSize: 10, color: '#888', display: 'flex', justifyContent: 'space-between' }}>
-          <span>GestionMagasin — Confidentiel</span>
+          <span>{etab?.centre || 'GestionMagasin'} — Confidentiel</span>
           <span>{new Date().toLocaleDateString('fr-CA')}</span>
         </div>
       </div>
@@ -112,7 +121,7 @@ function buildCustomersPages(clients) {
 }
 
 /* ── Rapport Orders ── */
-function buildOrdersPages(commandes, clients, calcTotaux) {
+function buildOrdersPages(commandes, clients, calcTotaux, etab) {
   const ROWS_PER_PAGE = 12;
   const pages = [];
   const total = Math.ceil(commandes.length / ROWS_PER_PAGE);
@@ -122,7 +131,7 @@ function buildOrdersPages(commandes, clients, calcTotaux) {
     const grandDue  = commandes.reduce((s, c) => s + calcTotaux(c).due,  0);
     pages.push(
       <div key={p}>
-        <ReportHeader title="Liste des Affectations" subtitle={`${commandes.length} affectations au total`} page={p + 1} total={total} />
+        <ReportHeader title="Liste des Affectations" subtitle={`${commandes.length} affectations au total`} page={p + 1} total={total} etab={etab} />
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
           <thead>
             <tr>
@@ -136,15 +145,15 @@ function buildOrdersPages(commandes, clients, calcTotaux) {
           </thead>
           <tbody>
             {slice.map((cmd, i) => {
-              const client = clients.find(c => c.id === cmd.clientId);
+              const client = cmd.client || clients.find(c => c.id === (cmd.client?.id || cmd.clientId));
               const t = calcTotaux(cmd);
               return (
                 <tr key={cmd.id} style={{ background: i % 2 === 0 ? '#fff' : '#f7f7f5' }}>
-                  <TD bold>{cmd.id}</TD>
-                  <TD>{client?.clientName || cmd.clientId}</TD>
+                  <TD bold>{cmd.invoiceNumber || cmd.id}</TD>
+                  <TD>{client?.clientName || '—'}</TD>
                   <TD small>{cmd.invoiceDate}</TD>
                   <TD small color="#555">{cmd.shipDate || '—'}</TD>
-                  <TD small>{cmd.transporteur}</TD>
+                  <TD small>{cmd.vendeur?.vendorName || cmd.transporteur || '—'}</TD>
                   <TD align="right" bold color={t.due > 0 ? '#c00' : '#060'}>{t.due.toFixed(2)} $</TD>
                 </tr>
               );
@@ -160,7 +169,7 @@ function buildOrdersPages(commandes, clients, calcTotaux) {
           )}
         </table>
         <div style={{ marginTop: 12, borderTop: '1px solid #ccc', paddingTop: 6, fontSize: 10, color: '#888', display: 'flex', justifyContent: 'space-between' }}>
-          <span>GestionMagasin — Confidentiel</span>
+          <span>{etab?.centre || 'GestionMagasin'} — Confidentiel</span>
           <span>{new Date().toLocaleDateString('fr-CA')}</span>
         </div>
       </div>
@@ -170,13 +179,13 @@ function buildOrdersPages(commandes, clients, calcTotaux) {
 }
 
 /* ── Rapport Invoice (1 facture par page) ── */
-function buildInvoicePages(commandes, clients, calcTotaux) {
+function buildInvoicePages(commandes, clients, calcTotaux, etab) {
   return commandes.map((cmd, idx) => {
-    const client = clients.find(c => c.id === cmd.clientId);
+    const client = cmd.client || clients.find(c => c.id === (cmd.client?.id || cmd.clientId));
     const t = calcTotaux(cmd);
     return (
       <div key={cmd.id}>
-        <ReportHeader title={`INVOICE #${cmd.id}`} subtitle={`${client?.clientName}`} page={idx + 1} total={commandes.length} />
+        <ReportHeader title={`INVOICE #${cmd.id}`} subtitle={`${client?.clientName}`} page={idx + 1} total={commandes.length} etab={etab} />
 
         {/* En-tête facture */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 14, padding: '10px 14px', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: 3 }}>
@@ -262,7 +271,7 @@ function buildInvoicePages(commandes, clients, calcTotaux) {
         </div>
 
         <div style={{ marginTop: 16, borderTop: '1px solid #ccc', paddingTop: 6, fontSize: 10, color: '#888', display: 'flex', justifyContent: 'space-between' }}>
-          <span>GestionMagasin — Merci de votre confiance</span>
+          <span>{etab?.centre || 'GestionMagasin'} — Merci de votre confiance</span>
           <span>{new Date().toLocaleDateString('fr-CA')}</span>
         </div>
       </div>
@@ -273,7 +282,7 @@ function buildInvoicePages(commandes, clients, calcTotaux) {
 /* ══════════════════════════════════════════════
    Composant PrintPreview principal
 ══════════════════════════════════════════════ */
-export default function PrintPreview({ reportType, clients, commandes, articles, calcTotaux, onClose }) {
+export default function PrintPreview({ reportType, clients, commandes, articles, calcTotaux, onClose, etab }) {
   const [pageIdx,   setPageIdx]   = useState(0);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [viewMode,  setViewMode]  = useState('single');
@@ -288,9 +297,9 @@ export default function PrintPreview({ reportType, clients, commandes, articles,
 
   /* ── Générer les pages selon le type ── */
   const pages =
-    reportType === 'customers' ? buildCustomersPages(clients) :
-    reportType === 'orders'    ? buildOrdersPages(commandes, clients, calcTotaux) :
-                                 buildInvoicePages(commandes, clients, calcTotaux);
+    reportType === 'customers' ? buildCustomersPages(clients, etab) :
+    reportType === 'orders'    ? buildOrdersPages(commandes, clients, calcTotaux, etab) :
+                                 buildInvoicePages(commandes, clients, calcTotaux, etab);
 
   const totalPages = pages.length;
 
