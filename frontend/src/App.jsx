@@ -2,20 +2,24 @@
 import { useState } from 'react';
 import './styles/global.css';
 
-import Login     from './pages/Login';
-import Accueil   from './pages/Accueil';
-import Recherche from './pages/Recherche';
-import Articles  from './pages/Articles';
-import Aides     from './pages/Aides';
-import OrderForm from './pages/OrderForm';
-import Etats     from './pages/Etats';
+import Login              from './pages/Login';
+import Accueil           from './pages/Accueil';
+import Recherche         from './pages/Recherche';
+import Articles          from './pages/Articles';
+import Aides             from './pages/Aides';
+import OrderForm         from './pages/OrderForm';
+import Etats             from './pages/Etats';
+import Approvisionnement from './pages/Approvisionnement';
+import Retours           from './pages/Retours';
 
 const PAGES = {
-  accueil:   Accueil,
-  recherche: Recherche,
-  articles:  Articles,
-  aides:     Aides,
-  etats:     Etats,
+  accueil:           Accueil,
+  recherche:         Recherche,
+  articles:          Articles,
+  aides:             Aides,
+  etats:             Etats,
+  approvisionnement: Approvisionnement,
+  retours:           Retours,
 };
 
 export default function App() {

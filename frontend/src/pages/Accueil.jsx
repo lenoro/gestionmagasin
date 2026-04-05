@@ -45,6 +45,30 @@ export default function Accueil({ navigate }) {
       ),
     },
     {
+      key: 'approvisionnement',
+      label: 'Approvision.',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <line x1="12" y1="12" x2="12" y2="22"/>
+          <line x1="3.27" y1="6.96" x2="12" y2="12"/>
+          <line x1="20.73" y1="6.96" x2="12" y2="12"/>
+        </svg>
+      ),
+    },
+    {
+      key: 'retours',
+      label: 'Retours',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="1 4 1 10 7 10"/>
+          <path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
+        </svg>
+      ),
+    },
+    {
       key: 'etats',
       label: 'États',
       icon: (

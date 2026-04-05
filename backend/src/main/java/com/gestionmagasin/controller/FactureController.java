@@ -4,6 +4,7 @@ import com.gestionmagasin.model.Facture;
 import com.gestionmagasin.model.Item;
 import com.gestionmagasin.repository.FactureRepository;
 import com.gestionmagasin.repository.ItemRepository;
+import com.gestionmagasin.service.StockService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -14,10 +15,12 @@ public class FactureController {
 
     private final FactureRepository factureRepo;
     private final ItemRepository itemRepo;
+    private final StockService stockService;
 
-    public FactureController(FactureRepository factureRepo, ItemRepository itemRepo) {
-        this.factureRepo = factureRepo;
-        this.itemRepo    = itemRepo;
+    public FactureController(FactureRepository factureRepo, ItemRepository itemRepo, StockService stockService) {
+        this.factureRepo  = factureRepo;
+        this.itemRepo     = itemRepo;
+        this.stockService = stockService;
     }
 
     @GetMapping
@@ -45,7 +48,12 @@ public class FactureController {
     }
 
     @PostMapping
-    public Facture create(@RequestBody Facture facture) { return factureRepo.save(facture); }
+    public Facture create(@RequestBody Facture facture) {
+        Facture saved = factureRepo.save(facture);
+        // Décrémenter le stock pour chaque article de la facture
+        try { stockService.enregistrerSorties(saved); } catch (Exception ignored) {}
+        return saved;
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Facture> update(@PathVariable Integer id, @RequestBody Facture data) {

@@ -100,3 +100,35 @@ export const ProducteurAPI = {
   update:  (id, data) => fetch(`${BASE_URL}${API_PREFIX}/producteurs/${id}`, { method: 'PUT',    headers: h(), body: JSON.stringify(data) }).then(r => r.json()),
   delete:  (id)       => fetch(`${BASE_URL}${API_PREFIX}/producteurs/${id}`, { method: 'DELETE', headers: h() }).then(r => r.ok),
 };
+
+/* ══════════════════════════════════════
+   APPROVISIONNEMENTS
+══════════════════════════════════════ */
+export const ApproAPI = {
+  getAll:   ()     => fetch(`${BASE_URL}${API_PREFIX}/approvisionnements`,            { headers: h() }).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(d => Array.isArray(d) ? d : []),
+  getById:  (id)   => fetch(`${BASE_URL}${API_PREFIX}/approvisionnements/${id}`,      { headers: h() }).then(r => r.json()),
+  create:   (data) => fetch(`${BASE_URL}${API_PREFIX}/approvisionnements`,            { method: 'POST',   headers: h(), body: JSON.stringify(data) }).then(r => r.json()),
+  valider:  (id)   => fetch(`${BASE_URL}${API_PREFIX}/approvisionnements/${id}/valider`, { method: 'POST', headers: h() }).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }),
+  delete:   (id)   => fetch(`${BASE_URL}${API_PREFIX}/approvisionnements/${id}`,      { method: 'DELETE', headers: h() }).then(r => r.ok),
+};
+
+/* ══════════════════════════════════════
+   RETOURS
+══════════════════════════════════════ */
+export const RetourAPI = {
+  getAll:   ()     => fetch(`${BASE_URL}${API_PREFIX}/retours`,            { headers: h() }).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(d => Array.isArray(d) ? d : []),
+  getById:  (id)   => fetch(`${BASE_URL}${API_PREFIX}/retours/${id}`,      { headers: h() }).then(r => r.json()),
+  create:   (data) => fetch(`${BASE_URL}${API_PREFIX}/retours`,            { method: 'POST',   headers: h(), body: JSON.stringify(data) }).then(r => r.json()),
+  accepter: (id)   => fetch(`${BASE_URL}${API_PREFIX}/retours/${id}/accepter`, { method: 'POST', headers: h() }).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }),
+  refuser:  (id)   => fetch(`${BASE_URL}${API_PREFIX}/retours/${id}/refuser`,  { method: 'POST', headers: h() }).then(r => r.json()),
+  delete:   (id)   => fetch(`${BASE_URL}${API_PREFIX}/retours/${id}`,      { method: 'DELETE', headers: h() }).then(r => r.ok),
+};
+
+/* ══════════════════════════════════════
+   MOUVEMENTS STOCK
+══════════════════════════════════════ */
+export const MouvementAPI = {
+  getAll:       ()        => fetch(`${BASE_URL}${API_PREFIX}/mouvements-stock`,                   { headers: h() }).then(r => r.json()).then(d => Array.isArray(d) ? d : []),
+  getByArticle: (artId)   => fetch(`${BASE_URL}${API_PREFIX}/mouvements-stock/article/${artId}`,  { headers: h() }).then(r => r.json()).then(d => Array.isArray(d) ? d : []),
+  ajuster:      (data)    => fetch(`${BASE_URL}${API_PREFIX}/mouvements-stock/ajuster`,           { method: 'POST', headers: h(), body: JSON.stringify(data) }).then(r => r.json()),
+};
