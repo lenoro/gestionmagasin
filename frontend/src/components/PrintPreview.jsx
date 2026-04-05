@@ -122,17 +122,16 @@ function buildOrdersPages(commandes, clients, calcTotaux) {
     const grandDue  = commandes.reduce((s, c) => s + calcTotaux(c).due,  0);
     pages.push(
       <div key={p}>
-        <ReportHeader title="Orders Report" subtitle={`${commandes.length} orders total`} page={p + 1} total={total} />
+        <ReportHeader title="Liste des Affectations" subtitle={`${commandes.length} affectations au total`} page={p + 1} total={total} />
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
           <thead>
             <tr>
-              <TH width={70}>Order No.</TH>
-              <TH>Customer</TH>
-              <TH width={85}>Sale Date</TH>
-              <TH width={85}>Ship Date</TH>
-              <TH width={70}>Vendor</TH>
-              <TH width={90} align="right">Amt Paid</TH>
-              <TH width={90} align="right">Amt Due</TH>
+              <TH width={70}>Clé Emp</TH>
+              <TH>Employé</TH>
+              <TH width={85}>Date Aff</TH>
+              <TH width={85}>Date eff</TH>
+              <TH width={70}>Fournisseurs</TH>
+              <TH width={90} align="right">Total</TH>
             </tr>
           </thead>
           <tbody>
@@ -146,7 +145,6 @@ function buildOrdersPages(commandes, clients, calcTotaux) {
                   <TD small>{cmd.invoiceDate}</TD>
                   <TD small color="#555">{cmd.shipDate || '—'}</TD>
                   <TD small>{cmd.transporteur}</TD>
-                  <TD align="right">{t.paid.toFixed(2)} $</TD>
                   <TD align="right" bold color={t.due > 0 ? '#c00' : '#060'}>{t.due.toFixed(2)} $</TD>
                 </tr>
               );
@@ -156,7 +154,6 @@ function buildOrdersPages(commandes, clients, calcTotaux) {
             <tfoot>
               <tr style={{ background: HDR_BG }}>
                 <td colSpan={5} style={{ padding: '5px 8px', color: HDR_FG, fontWeight: 700, fontSize: 12 }}>TOTAL</td>
-                <td style={{ padding: '5px 8px', textAlign: 'right', color: HDR_FG, fontWeight: 700, fontSize: 12 }}>{grandPaid.toFixed(2)} $</td>
                 <td style={{ padding: '5px 8px', textAlign: 'right', color: '#ffcccc', fontWeight: 700, fontSize: 12 }}>{grandDue.toFixed(2)} $</td>
               </tr>
             </tfoot>
@@ -348,7 +345,7 @@ export default function PrintPreview({ reportType, clients, commandes, articles,
         <div style={{ background: 'linear-gradient(to right, #0a246a, #a6b8d8)', padding: '3px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ fontSize: 14 }}>🖨</span>
-            <span style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>Print Preview</span>
+            <span style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>Affichage avant impression</span>
           </div>
           <div style={{ display: 'flex', gap: 2 }}>
             <button style={{ width: 16, height: 14, fontSize: 10, background: '#c0c0c0', border: '1px solid #888', cursor: 'pointer' }}>─</button>
@@ -465,7 +462,7 @@ export default function PrintPreview({ reportType, clients, commandes, articles,
           <span style={{ borderRight: '1px solid #aaa', paddingRight: 10 }}>{zoomPct}%</span>
           <span>Page {pageIdx + 1} of {totalPages}</span>
           <span style={{ marginLeft: 'auto', color: '#555' }}>
-            {reportType === 'customers' ? 'Customer List' : reportType === 'orders' ? 'Orders Report' : 'Invoice Report'}
+            {reportType === 'customers' ? 'État Employés' : reportType === 'orders' ? 'Liste des Affectations' : 'État des Factures'}
           </span>
         </div>
 
