@@ -130,7 +130,7 @@ function buildOrdersPages(commandes, clients, calcTotaux, etab) {
     const grandPaid = commandes.reduce((s, c) => s + calcTotaux(c).paid, 0);
     const grandDue  = commandes.reduce((s, c) => s + calcTotaux(c).due,  0);
     pages.push(
-      <div key={p}>
+      <div key={p} style={{ position: 'relative', minHeight: PAGE_H - 80 }}>
         <ReportHeader title="Liste des Affectations" subtitle={`${commandes.length} affectations au total`} page={p + 1} total={total} etab={etab} />
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
           <thead>
@@ -168,7 +168,7 @@ function buildOrdersPages(commandes, clients, calcTotaux, etab) {
             </tfoot>
           )}
         </table>
-        <div style={{ marginTop: 12, borderTop: '1px solid #ccc', paddingTop: 6, fontSize: 10, color: '#888', display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ position: 'absolute', bottom: 24, left: 0, right: 0, borderTop: '1px solid #ccc', paddingTop: 6, fontSize: 10, color: '#888', display: 'flex', justifyContent: 'space-between' }}>
           <span>{etab?.centre || 'GestionMagasin'} — Confidentiel</span>
           <span>{new Date().toLocaleDateString('fr-CA')}</span>
         </div>
@@ -184,28 +184,22 @@ function buildInvoicePages(commandes, clients, calcTotaux, etab) {
     const client = cmd.client || clients.find(c => c.id === (cmd.client?.id || cmd.clientId));
     const t = calcTotaux(cmd);
     return (
-      <div key={cmd.id}>
-        <ReportHeader title={`INVOICE #${cmd.id}`} subtitle={`${client?.clientName}`} page={idx + 1} total={commandes.length} etab={etab} />
+      <div key={cmd.id} style={{ position: 'relative', minHeight: PAGE_H - 80 }}>
+        <ReportHeader title={`Facture N° ${cmd.invoiceNumber || cmd.id}`} subtitle={`${client?.clientName || ''}`} page={idx + 1} total={commandes.length} etab={etab} />
 
         {/* En-tête facture */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 14, padding: '10px 14px', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: 3 }}>
           <div style={{ fontSize: 12 }}>
-            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>Bill To :</div>
             <div style={{ fontWeight: 700 }}>{client?.clientName}</div>
-            <div style={{ color: '#555' }}>{client?.add1}{client?.add2 ? ', ' + client.add2 : ''}</div>
-            <div style={{ color: '#555' }}>{client?.city}, {client?.state} {client?.zip}</div>
-            <div style={{ color: '#555' }}>{client?.country}</div>
+            <div style={{ color: '#555' }}>{client?.address || client?.add1}{client?.add2 ? ', ' + client.add2 : ''}</div>
+            <div style={{ color: '#555' }}>{client?.city}{client?.state ? ', ' + client.state : ''}{client?.zip ? ' ' + client.zip : ''}</div>
             <div style={{ marginTop: 4 }}>Tél : {client?.phone}</div>
           </div>
           <div style={{ fontSize: 12, textAlign: 'right' }}>
             <table style={{ marginLeft: 'auto', borderCollapse: 'collapse' }}>
               {[
                 ['Date :', cmd.invoiceDate],
-                ['Livraison :', cmd.shipDate || '—'],
-                ['PO# :', cmd.poNum],
                 ['Vendeur :', cmd.vendeur?.vendorName || cmd.vendeur || '—'],
-                ['Paiement :', cmd.paiement],
-                ['Transport :', cmd.transporteur],
               ].map(([k, v]) => (
                 <tr key={k}>
                   <td style={{ padding: '1px 8px 1px 0', color: '#555', textAlign: 'right' }}>{k}</td>
@@ -220,26 +214,23 @@ function buildInvoicePages(commandes, clients, calcTotaux, etab) {
         <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 10 }}>
           <thead>
             <tr>
-              <TH width={70}>Part No.</TH>
-              <TH>Description</TH>
-              <TH width={90} align="right">Unit Price</TH>
-              <TH width={50} align="center">Qty</TH>
-              <TH width={70} align="right">Discount</TH>
-              <TH width={100} align="right">Ext. Price</TH>
+              <TH width={80}>Code</TH>
+              <TH>Désignation</TH>
+              <TH width={90} align="right">Prix U</TH>
+              <TH width={50} align="center">Qté</TH>
+              <TH width={110} align="right">Total</TH>
             </tr>
           </thead>
           <tbody>
             {(cmd.items || []).map((l, i) => {
               const unitPrice = l.unitPrice || 0;
-              const remise    = l.remise    || 0;
-              const ext = unitPrice * (l.quantity || 0) * (1 - remise / 100);
+              const ext = unitPrice * (l.quantity || 0);
               return (
                 <tr key={l.id} style={{ background: i % 2 === 0 ? '#fff' : '#f7f7f5' }}>
-                  <TD bold>{l.articleCode}</TD>
-                  <TD>{l.articleName}</TD>
+                  <TD bold>{l.article?.articleCode || l.articleCode || '—'}</TD>
+                  <TD>{l.article?.articleName || l.articleName || '—'}</TD>
                   <TD align="right">{unitPrice.toFixed(2)} $</TD>
                   <TD align="center">{l.quantity}</TD>
-                  <TD align="right" color={remise > 0 ? '#c00' : '#000'}>{remise.toFixed(2)}%</TD>
                   <TD align="right" bold>{ext.toFixed(2)} $</TD>
                 </tr>
               );
@@ -247,30 +238,20 @@ function buildInvoicePages(commandes, clients, calcTotaux, etab) {
           </tbody>
         </table>
 
-        {/* Totaux */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        {/* Total */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 40 }}>
           <table style={{ borderCollapse: 'collapse', fontSize: 12, minWidth: 220 }}>
-            {[
-              ['Subtotal :', t.subtotal.toFixed(2) + ' $', false],
-              [`Tax (${cmd.taxRate}%) :`, t.tax.toFixed(2) + ' $', false],
-              ['Freight :',   t.freight.toFixed(2) + ' $', false],
-              ['Paid :',      t.paid.toFixed(2) + ' $',    false],
-            ].map(([k, v]) => (
-              <tr key={k}>
-                <td style={{ padding: '3px 12px 3px 0', color: '#555', textAlign: 'right', fontSize: 12 }}>{k}</td>
-                <td style={{ padding: '3px 0', textAlign: 'right', minWidth: 90 }}>{v}</td>
-              </tr>
-            ))}
             <tr style={{ borderTop: '2px solid #0a246a' }}>
-              <td style={{ padding: '5px 12px 5px 0', fontWeight: 700, fontSize: 14, textAlign: 'right' }}>DUE :</td>
-              <td style={{ padding: '5px 0', fontWeight: 700, fontSize: 14, textAlign: 'right', color: t.due > 0 ? '#c00' : '#060' }}>
-                {t.due.toFixed(2)} $
+              <td style={{ padding: '5px 12px 5px 0', fontWeight: 700, fontSize: 14, textAlign: 'right' }}>Total :</td>
+              <td style={{ padding: '5px 0', fontWeight: 700, fontSize: 14, textAlign: 'right', color: '#0a246a' }}>
+                {(t.due ?? t.subtotal ?? 0).toFixed(2)} $
               </td>
             </tr>
           </table>
         </div>
 
-        <div style={{ marginTop: 16, borderTop: '1px solid #ccc', paddingTop: 6, fontSize: 10, color: '#888', display: 'flex', justifyContent: 'space-between' }}>
+        {/* Pied de page — en bas */}
+        <div style={{ position: 'absolute', bottom: 24, left: 40, right: 40, borderTop: '1px solid #ccc', paddingTop: 6, fontSize: 10, color: '#888', display: 'flex', justifyContent: 'space-between' }}>
           <span>{etab?.centre || 'GestionMagasin'} — Merci de votre confiance</span>
           <span>{new Date().toLocaleDateString('fr-CA')}</span>
         </div>
@@ -427,7 +408,7 @@ export default function PrintPreview({ reportType, clients, commandes, articles,
               style={{ padding: '3px 16px', fontSize: 13, border: '1px solid #888', borderRadius: 3, background: '#e8e8e8', cursor: 'pointer', fontFamily: 'inherit' }}
               onClick={onClose}
             >
-              <span style={{ textDecoration: 'underline' }}>C</span>lose
+              Fermer
             </button>
           </div>
         </div>
