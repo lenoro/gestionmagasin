@@ -81,15 +81,15 @@ function buildCustomersPages(clients, etab) {
   for (let p = 0; p < total; p++) {
     const slice = clients.slice(p * ROWS_PER_PAGE, (p + 1) * ROWS_PER_PAGE);
     pages.push(
-      <div key={p}>
-        <ReportHeader title="Customer List" subtitle="By Last Invoice" page={p + 1} total={total} etab={etab} />
+      <div key={p} style={{ position: 'relative', minHeight: PAGE_H - 80 }}>
+        <ReportHeader title="Liste Employés" subtitle={`${clients.length} employés au total`} page={p + 1} total={total} etab={etab} />
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
           <thead>
             <tr>
-              <TH width={70}>Last Invoice</TH>
-              <TH>Customer / Address</TH>
-              <TH width={110}>Phone / FAX</TH>
-              <TH width={80} align="right">Customer No.</TH>
+              <TH width={70}>Dernière Aff</TH>
+              <TH>Employé</TH>
+              <TH width={110}>Téléphone</TH>
+              <TH width={80} align="right">Clé</TH>
             </tr>
           </thead>
           <tbody>
@@ -98,20 +98,19 @@ function buildCustomersPages(clients, etab) {
                 <TD small color="#555">{c.lastInvoice || '—'}</TD>
                 <td style={{ padding: '4px 8px', fontSize: 12, borderBottom: '1px solid #e0e0e0' }}>
                   <div style={{ fontWeight: 700 }}>{c.clientName}</div>
-                  <div style={{ fontSize: 10, color: '#666' }}>{c.add1}{c.add2 ? ', ' + c.add2 : ''}, {c.city}</div>
+                  <div style={{ fontSize: 10, color: '#666' }}>{c.add1}{c.add2 ? ', ' + c.add2 : ''}{c.city ? ', ' + c.city : ''}</div>
                 </td>
                 <td style={{ padding: '4px 8px', fontSize: 10, color: '#444', borderBottom: '1px solid #e0e0e0' }}>
                   <div>{c.phone}</div>
-                  <div>{c.fax}</div>
                 </td>
                 <TD align="right" bold>{c.id}</TD>
               </tr>
             ))}
           </tbody>
         </table>
-        {/* Pied de page */}
-        <div style={{ marginTop: 12, borderTop: '1px solid #ccc', paddingTop: 6, fontSize: 10, color: '#888', display: 'flex', justifyContent: 'space-between' }}>
-          <span>{etab?.centre || 'GestionMagasin'} — Confidentiel</span>
+        {/* Pied de page — en bas */}
+        <div style={{ position: 'absolute', bottom: 24, left: 0, right: 0, borderTop: '1px solid #ccc', paddingTop: 6, fontSize: 10, color: '#888', display: 'flex', justifyContent: 'space-between' }}>
+          <span>{etab?.centre || 'GestionMagasin'} — Merci de votre confiance</span>
           <span>{new Date().toLocaleDateString('fr-CA')}</span>
         </div>
       </div>
