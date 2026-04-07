@@ -11,6 +11,7 @@ import OrderForm         from './pages/OrderForm';
 import Etats             from './pages/Etats';
 import Approvisionnement from './pages/Approvisionnement';
 import Retours           from './pages/Retours';
+import Traces            from './pages/Traces';
 
 const PAGES = {
   accueil:           Accueil,
@@ -20,6 +21,7 @@ const PAGES = {
   etats:             Etats,
   approvisionnement: Approvisionnement,
   retours:           Retours,
+  traces:            Traces,
 };
 
 export default function App() {

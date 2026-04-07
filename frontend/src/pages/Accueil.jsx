@@ -88,6 +88,22 @@ export default function Accueil({ navigate }) {
       ),
     },
     {
+      key: 'traces',
+      label: 'Journal\nAudit',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="8" y1="12" x2="16" y2="12"/>
+          <line x1="8" y1="16" x2="12" y2="16"/>
+          <circle cx="17" cy="18" r="3"/>
+          <line x1="17" y1="16.5" x2="17" y2="19.5"/>
+          <line x1="15.5" y1="18" x2="18.5" y2="18"/>
+        </svg>
+      ),
+    },
+    {
       key: 'aides',
       label: 'Aide',
       icon: (

@@ -134,6 +134,16 @@ export const MouvementAPI = {
 };
 
 /* ══════════════════════════════════════
+   TRACES (lecture seule)
+══════════════════════════════════════ */
+export const TraceAPI = {
+  getAll:          ()          => fetch(`${BASE_URL}${API_PREFIX}/traces`,                       { headers: h() }).then(r => r.json()).then(d => Array.isArray(d) ? d : []),
+  getByEntite:     (entite)    => fetch(`${BASE_URL}${API_PREFIX}/traces?entite=${entite}`,      { headers: h() }).then(r => r.json()).then(d => Array.isArray(d) ? d : []),
+  getByUtilisateur:(user)      => fetch(`${BASE_URL}${API_PREFIX}/traces?utilisateur=${user}`,   { headers: h() }).then(r => r.json()).then(d => Array.isArray(d) ? d : []),
+  getByAction:     (action)    => fetch(`${BASE_URL}${API_PREFIX}/traces?action=${action}`,      { headers: h() }).then(r => r.json()).then(d => Array.isArray(d) ? d : []),
+};
+
+/* ══════════════════════════════════════
    ETABLISSEMENT
 ══════════════════════════════════════ */
 export const EtablissementAPI = {
