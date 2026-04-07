@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { CLIENTS }  from '../data/clients';
 import { ARTICLES } from '../data/articles';
 import SelectAPart  from '../components/SelectAPart';
-import { ClientAPI, ArticleAPI, FactureAPI } from '../data/api';
+import { ClientAPI, ArticleAPI, FactureAPI, ProducteurAPI, ApproAPI } from '../data/api';
 
 // ── Données de référence ──────────────────────────────────────────────
 const VENDEURS    = ['Parker, Bill', 'Martin, Jean', 'Tremblay, Luc', 'Côté, Marie'];
@@ -119,37 +119,55 @@ const S = {
   cell:    { padding: '3px 6px', fontSize: 13, borderBottom: '1px solid #ddd', verticalAlign: 'middle' },
 };
 
-export default function OrderForm({ navigate }) {
+export default function OrderForm({ navigate, mode = 'affectation' }) {
+  const isReception = mode === 'reception';
+
   const [commandes, setCommandes] = useState(COMMANDES_INIT);
-  const [idx, setIdx]             = useState(0);           // index courant dans le dataset
+  const [idx, setIdx]             = useState(0);
   const [editing, setEditing]     = useState(false);
-  const [draft, setDraft]         = useState(null);        // copie en cours d'édition
-  const [nextLigneId, setNextLigneId]       = useState(10);
+  const [draft, setDraft]         = useState(null);
+  const [nextLigneId, setNextLigneId]             = useState(10);
   const [selectPartLigneId, setSelectPartLigneId] = useState(null);
-  const [apiClients,   setApiClients]   = useState(CLIENTS);
-  const [apiArticles,  setApiArticles]  = useState(ARTICLES);
-  const [saving,       setSaving]       = useState(false);
-  const [loadError,    setLoadError]    = useState(null);
-  const [errors,       setErrors]       = useState({});
+  const [apiClients,      setApiClients]      = useState(CLIENTS);
+  const [apiFournisseurs, setApiFournisseurs] = useState([]);
+  const [apiArticles,     setApiArticles]     = useState(ARTICLES);
+  const [saving,    setSaving]    = useState(false);
+  const [loadError, setLoadError] = useState(null);
+  const [errors,    setErrors]    = useState({});
 
   /* ── Chargement depuis le backend au montage ── */
   useEffect(() => {
-    Promise.all([
-      ClientAPI.getAll().catch(() => null),
-      ArticleAPI.getAll().catch(() => null),
-      FactureAPI.getAll().catch(() => null),
-    ]).then(([clientsData, articlesData, facturesData]) => {
-      if (clientsData)  setApiClients(clientsData);
-      if (articlesData) setApiArticles(articlesData);
-      if (facturesData && facturesData.length > 0) {
-        setCommandes(facturesData.map(normalizeFacture));
-        setIdx(0);
-      }
-    }).catch(() => setLoadError('Backend indisponible — données locales utilisées'));
-  }, []);
+    if (isReception) {
+      // Mode réception : charger fournisseurs (producteurs) + articles
+      Promise.all([
+        ProducteurAPI.getAll().catch(() => null),
+        ArticleAPI.getAll().catch(() => null),
+      ]).then(([fourData, articlesData]) => {
+        if (fourData)    setApiFournisseurs(fourData);
+        if (articlesData) setApiArticles(articlesData);
+        setCommandes([]);   // liste vide au départ
+        setIdx(-1);
+      }).catch(() => setLoadError('Backend indisponible'));
+    } else {
+      // Mode affectation : charger clients + articles + factures existantes
+      Promise.all([
+        ClientAPI.getAll().catch(() => null),
+        ArticleAPI.getAll().catch(() => null),
+        FactureAPI.getAll().catch(() => null),
+      ]).then(([clientsData, articlesData, facturesData]) => {
+        if (clientsData)  setApiClients(clientsData);
+        if (articlesData) setApiArticles(articlesData);
+        if (facturesData && facturesData.length > 0) {
+          setCommandes(facturesData.map(normalizeFacture));
+          setIdx(0);
+        }
+      }).catch(() => setLoadError('Backend indisponible — données locales utilisées'));
+    }
+  }, [isReception]);
 
-  const cmd     = editing ? draft : commandes[idx];
-  const client  = CLIENTS.find(c => c.id === cmd.clientId) || CLIENTS[0];
+  const cmd       = editing ? draft : (commandes[idx] || { clientId: '', invoiceDate: today, vendeur: VENDEURS[0], poNum: '', items: [], taxRate: 4.5, freight: 0, paid: 0 });
+  const client    = CLIENTS.find(c => c.id === cmd.clientId) || CLIENTS[0];
+  const fournisseur = apiFournisseurs.find(f => String(f.id) === String(cmd.clientId));
   const totaux  = calcTotaux(cmd);
   const status  = editing ? 'Edit' : 'Browsing';
 
@@ -178,53 +196,80 @@ export default function OrderForm({ navigate }) {
     setErrors({});
     setSaving(true);
 
-    const facturePayload = {
-      ...draft,
-      client:  { id: draft.clientId },
-      vendeur: apiClients.find(c => c.id === draft.clientId) ? { id: 1 } : null,
-      items:   (draft.items || []).map(l => ({
-        id:        l.id > 9 ? undefined : l.id,
-        article:   { id: apiArticles.find(a => a.articleCode === l.articleCode)?.id },
-        quantity:  parseInt(l.quantity)  || 1,
-        unitPrice: parseFloat(l.unitPrice) || 0,
-        lineTotal: (parseFloat(l.unitPrice) || 0) * (parseInt(l.quantity) || 1),
-      })),
-    };
-
-    const isExisting = draft.id && commandes.find(c => c.id === draft.id);
-    const apiCall = isExisting
-      ? FactureAPI.update(draft.id, facturePayload)
-      : FactureAPI.create(facturePayload);
-
-    apiCall
-      .then(saved => {
-        if (isExisting) {
-          setCommandes(prev => prev.map(c => c.id === draft.id ? { ...draft, ...saved } : c));
-        } else {
+    if (isReception) {
+      /* ── Sauvegarde RÉCEPTION → Approvisionnement ── */
+      const payload = {
+        dateAppro:  draft.invoiceDate,
+        reference:  draft.poNum,
+        statut:     'EN_ATTENTE',
+        producteur: draft.clientId ? { id: parseInt(draft.clientId) } : null,
+        items: (draft.items || []).map(l => ({
+          article:   { id: apiArticles.find(a => a.articleCode === l.articleCode)?.id },
+          quantite:  parseInt(l.quantity)  || 1,
+          prixAchat: parseFloat(l.unitPrice) || 0,
+        })),
+      };
+      ApproAPI.create(payload)
+        .then(saved => {
+          const newCmd = { ...draft, id: saved.id || draft.id };
           setCommandes(prev => {
-            const updated = [...prev, { ...draft, id: saved.id || draft.id }];
+            const updated = [...prev, newCmd];
             setIdx(updated.length - 1);
             return updated;
           });
-        }
-      })
-      .catch(() => {
-        // Fallback local
-        if (isExisting) {
-          setCommandes(prev => prev.map(c => c.id === draft.id ? draft : c));
-        } else {
+        })
+        .catch(() => {
           setCommandes(prev => {
             const updated = [...prev, draft];
             setIdx(updated.length - 1);
             return updated;
           });
-        }
-      })
-      .finally(() => {
-        setSaving(false);
-        setEditing(false);
-        setDraft(null);
-      });
+        })
+        .finally(() => { setSaving(false); setEditing(false); setDraft(null); });
+
+    } else {
+      /* ── Sauvegarde AFFECTATION → Facture ── */
+      const facturePayload = {
+        ...draft,
+        client:  { id: draft.clientId },
+        vendeur: apiClients.find(c => c.id === draft.clientId) ? { id: 1 } : null,
+        items:   (draft.items || []).map(l => ({
+          id:        l.id > 9 ? undefined : l.id,
+          article:   { id: apiArticles.find(a => a.articleCode === l.articleCode)?.id },
+          quantity:  parseInt(l.quantity)  || 1,
+          unitPrice: parseFloat(l.unitPrice) || 0,
+          lineTotal: (parseFloat(l.unitPrice) || 0) * (parseInt(l.quantity) || 1),
+        })),
+      };
+      const isExisting = draft.id && commandes.find(c => c.id === draft.id);
+      const apiCall = isExisting
+        ? FactureAPI.update(draft.id, facturePayload)
+        : FactureAPI.create(facturePayload);
+      apiCall
+        .then(saved => {
+          if (isExisting) {
+            setCommandes(prev => prev.map(c => c.id === draft.id ? { ...draft, ...saved } : c));
+          } else {
+            setCommandes(prev => {
+              const updated = [...prev, { ...draft, id: saved.id || draft.id }];
+              setIdx(updated.length - 1);
+              return updated;
+            });
+          }
+        })
+        .catch(() => {
+          if (isExisting) {
+            setCommandes(prev => prev.map(c => c.id === draft.id ? draft : c));
+          } else {
+            setCommandes(prev => {
+              const updated = [...prev, draft];
+              setIdx(updated.length - 1);
+              return updated;
+            });
+          }
+        })
+        .finally(() => { setSaving(false); setEditing(false); setDraft(null); });
+    }
   };
 
   const cancelEdits = () => { setEditing(false); setDraft(null); setErrors({}); };
@@ -298,7 +343,9 @@ export default function OrderForm({ navigate }) {
 
         {/* Barre de titre */}
         <div style={{ background: 'linear-gradient(to right, #0a246a, #a6b8d8)', padding: '3px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>Affectation</span>
+          <span style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>
+            {isReception ? '📥 Réception — Entrée articles' : '📤 Affectation — Sortie articles'}
+          </span>
           <div style={{ display: 'flex', gap: 2 }}>
             <button onClick={() => navigate('accueil')} style={{ width: 16, height: 14, fontSize: 10, background: '#c0c0c0', border: '1px solid #888', cursor: 'pointer', lineHeight: 1 }}>─</button>
             <button style={{ width: 16, height: 14, fontSize: 10, background: '#c0c0c0', border: '1px solid #888', cursor: 'pointer', lineHeight: 1 }}>□</button>
@@ -337,17 +384,23 @@ export default function OrderForm({ navigate }) {
             <button style={S.btnNav} title="Dernier"    onClick={goLast}>►|</button>
             <div style={{ width: 1, height: 20, background: '#aaa', margin: '0 4px' }} />
             <button style={S.btnNav}>🖨</button>
-            <span style={{ marginLeft: 'auto', color: '#0000cc', fontSize: 12 }}>[Orders: {status}] {idx + 1}/{commandes.length}</span>
+            <span style={{ marginLeft: 'auto', color: '#0000cc', fontSize: 12 }}>
+              [{isReception ? 'Réceptions' : 'Affectations'}: {status}] {commandes.length > 0 ? idx + 1 : 0}/{commandes.length}
+            </span>
           </div>
 
-          {/* ── Bill To / CustNo / Ship To / Date ── */}
+          {/* ── Partenaire / Date ── */}
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 80px 120px 36px', gap: 6, marginBottom: 6 }}>
             <div style={{ width: 180 }}>
-              <span style={S.label}>Destinataire</span>
+              <span style={S.label}>{isReception ? 'Fournisseur' : 'Destinataire'}</span>
               <select style={{ ...S.select, ...(errors.clientId ? { border: '1px solid #c00', background: '#fff0f0' } : {}) }}
                 value={cmd.clientId}
                 onChange={e => { setField('clientId', e.target.value); setErrors(ev => ({ ...ev, clientId: undefined })); }}>
-                {apiClients.map(c => <option key={c.id} value={c.id}>{c.clientName}</option>)}
+                <option value="">— Sélectionner —</option>
+                {isReception
+                  ? apiFournisseurs.map(f => <option key={f.id} value={f.id}>{f.producerName}</option>)
+                  : apiClients.map(c => <option key={c.id} value={c.id}>{c.clientName}</option>)
+                }
               </select>
               {errors.clientId && <span style={{ fontSize: 11, color: '#c00' }}>{errors.clientId}</span>}
             </div>
@@ -367,19 +420,21 @@ export default function OrderForm({ navigate }) {
             </div>
           </div>
 
-          {/* ── Adresse client (lecture seule, tirée du client sélectionné) ── */}
+          {/* ── Infos partenaire (lecture seule) ── */}
           <div style={{ marginBottom: 6 }}>
-            <input style={S.inputRO} readOnly value={client.address} />
+            <input style={S.inputRO} readOnly
+              value={isReception ? (fournisseur?.contactEmail || '') : (client.address || '')} />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 6 }}>
-            <input style={S.inputRO} readOnly value={client.phone} />
+            <input style={S.inputRO} readOnly
+              value={isReception ? (fournisseur?.phone || '') : (client.phone || '')} />
             <input style={S.inputRO} readOnly value="" />
           </div>
 
           {/* ── SoldBy / Terms / Payment / ShipVia / PO# ── */}
           <div style={{ display: 'grid', gridTemplateColumns: '1.5fr', gap: 6, marginBottom: 8 }}>
             <div style={{ width: 180 }}>
-              <span style={S.label}>Fait par</span>
+              <span style={S.label}>{isReception ? 'Réceptionné par' : 'Fait par'}</span>
               <select style={S.select} value={cmd.vendeur?.vendorName || cmd.vendeur || ''}
                 onChange={e => setField('vendeur', e.target.value)}>
                 {VENDEURS.map(o => <option key={o}>{o}</option>)}

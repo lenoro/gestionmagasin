@@ -40,8 +40,9 @@ export default function App() {
   // Si pas connecté → page Login
   if (!username) return <Login onLogin={handleLogin} />;
 
-  if (page === 'orderform') return <OrderForm navigate={setPage} />;
-  if (page === 'etats')     return <Etats     navigate={setPage} />;
+  if (page === 'affectation') return <OrderForm navigate={setPage} mode="affectation" />;
+  if (page === 'reception')   return <OrderForm navigate={setPage} mode="reception" />;
+  if (page === 'etats')       return <Etats     navigate={setPage} />;
 
   const PageComponent = PAGES[page] || Accueil;
   return (

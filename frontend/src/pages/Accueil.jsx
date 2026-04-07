@@ -12,8 +12,8 @@ export default function Accueil({ navigate }) {
 
   const boutons = [
     {
-      key: 'orderform',
-      label: 'Nouvelle\nFacture',
+      key: 'affectation',
+      label: 'Affectation',
       icon: (
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -21,9 +21,22 @@ export default function Accueil({ navigate }) {
           <line x1="7" y1="6"  x2="13" y2="6"/>
           <line x1="7" y1="9"  x2="13" y2="9"/>
           <line x1="7" y1="12" x2="10" y2="12"/>
-          <circle cx="17" cy="17" r="4"/>
-          <line x1="17" y1="15" x2="17" y2="19"/>
-          <line x1="15" y1="17" x2="19" y2="17"/>
+          <polyline points="15 17 18 20 23 13"/>
+        </svg>
+      ),
+    },
+    {
+      key: 'reception',
+      label: 'Réception',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="4" y="2" width="12" height="16" rx="1"/>
+          <line x1="7" y1="6"  x2="13" y2="6"/>
+          <line x1="7" y1="9"  x2="13" y2="9"/>
+          <line x1="7" y1="12" x2="10" y2="12"/>
+          <line x1="19" y1="13" x2="19" y2="21"/>
+          <polyline points="16 18 19 21 22 18"/>
         </svg>
       ),
     },
