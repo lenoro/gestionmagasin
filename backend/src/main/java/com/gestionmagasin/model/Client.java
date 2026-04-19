@@ -1,19 +1,18 @@
 package com.gestionmagasin.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "clients")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Client.class)
 public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "client_code", nullable = false, unique = true, length = 20)
     private String clientCode;
@@ -36,13 +35,12 @@ public class Client {
     @Column(name = "updated_at")
     private String updatedAt;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "client")
     private List<Facture> factures;
 
     // getters & setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public String getClientCode() { return clientCode; }
     public void setClientCode(String clientCode) { this.clientCode = clientCode; }
     public String getClientName() { return clientName; }

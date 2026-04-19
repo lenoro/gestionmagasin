@@ -1,20 +1,18 @@
 package com.gestionmagasin.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "invoice_items")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Item.class)
 public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "invoice_id", nullable = false)
     private Facture invoice;
@@ -33,8 +31,8 @@ public class Item {
     private double lineTotal;
 
     // getters & setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public Facture getInvoice() { return invoice; }
     public void setInvoice(Facture invoice) { this.invoice = invoice; }
     public Article getArticle() { return article; }

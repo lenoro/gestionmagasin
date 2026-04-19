@@ -7,17 +7,22 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/items")
+@CrossOrigin(origins = "*")
 public class ItemController {
 
     private final ItemRepository repo;
 
-    public ItemController(ItemRepository repo) { this.repo = repo; }
+    public ItemController(ItemRepository repo) {
+        this.repo = repo;
+    }
 
     @PostMapping
-    public Item create(@RequestBody Item item) { return repo.save(item); }
+    public Item create(@RequestBody Item item) {
+        return repo.save(item);
+    }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Item> update(@PathVariable Integer id, @RequestBody Item data) {
+    public ResponseEntity<Item> update(@PathVariable Long id, @RequestBody Item data) {
         return repo.findById(id).map(i -> {
             i.setQuantity(data.getQuantity());
             i.setUnitPrice(data.getUnitPrice());
@@ -28,7 +33,7 @@ public class ItemController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!repo.existsById(id)) return ResponseEntity.notFound().build();
         repo.deleteById(id);
         return ResponseEntity.ok().build();

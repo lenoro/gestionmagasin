@@ -2,29 +2,28 @@ package com.gestionmagasin.controller;
 
 import com.gestionmagasin.model.Vendeur;
 import com.gestionmagasin.repository.VendeurRepository;
-import com.gestionmagasin.service.TraceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/vendeurs")
+@CrossOrigin(origins = "*")
 public class VendeurController {
 
     private final VendeurRepository repo;
-    private final TraceService      traceService;
 
-    public VendeurController(VendeurRepository repo, TraceService traceService) {
-        this.repo         = repo;
-        this.traceService = traceService;
+    public VendeurController(VendeurRepository repo) {
+        this.repo = repo;
     }
 
     @GetMapping
-    public List<Vendeur> getAll() { return repo.findAll(); }
+    public List<Vendeur> getAll() {
+        return repo.findAll();
+    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Vendeur> getById(@PathVariable Integer id) {
+    public ResponseEntity<Vendeur> getById(@PathVariable Long id) {
         return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
@@ -41,41 +40,27 @@ public class VendeurController {
 
     @PostMapping
     public Vendeur create(@RequestBody Vendeur vendeur) {
-        Vendeur saved = repo.save(vendeur);
-        traceService.log("VENDEUR", "AJOUT",
-                saved.getVendorCode(),
-                null,
-                saved.getVendorName() + " | Tél: " + saved.getPhone(),
-                "Création vendeur");
-        return saved;
+        if (vendeur.getVendorCode() == null || vendeur.getVendorCode().isBlank()) {
+            vendeur.setVendorCode(String.format("VEN-%04d", repo.count() + 1));
+        }
+        return repo.save(vendeur);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Vendeur> update(@PathVariable Integer id, @RequestBody Vendeur data) {
+    public ResponseEntity<Vendeur> update(@PathVariable Long id, @RequestBody Vendeur data) {
         return repo.findById(id).map(v -> {
-            String ancienne = v.getVendorName() + " | Email: " + v.getContactEmail();
             v.setVendorCode(data.getVendorCode());
             v.setVendorName(data.getVendorName());
             v.setContactEmail(data.getContactEmail());
             v.setPhone(data.getPhone());
-            Vendeur saved = repo.save(v);
-            String nouvelle = saved.getVendorName() + " | Email: " + saved.getContactEmail();
-            traceService.log("VENDEUR", "MODIFICATION",
-                    saved.getVendorCode(), ancienne, nouvelle, "Modification vendeur");
-            return ResponseEntity.ok(saved);
+            return ResponseEntity.ok(repo.save(v));
         }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        return repo.findById(id).map(v -> {
-            traceService.log("VENDEUR", "SUPPRESSION",
-                    v.getVendorCode(),
-                    v.getVendorName() + " | Tél: " + v.getPhone(),
-                    null,
-                    "Suppression vendeur");
-            repo.deleteById(id);
-            return ResponseEntity.ok().<Void>build();
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (!repo.existsById(id)) return ResponseEntity.notFound().build();
+        repo.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 }
