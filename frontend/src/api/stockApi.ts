@@ -35,11 +35,12 @@ export const employeApiV2 = {
   delete: (id: number) => apiAxios.delete(`/api/employes/${id}`),
 }
 
-const GS_BASE = 'http://localhost:8081'
+const GS_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8081' : ''
+const API_PREFIX = window.location.hostname === 'localhost' ? '' : '/api'
 const TOKEN_KEY = 'gs_token'
 
 // Instance axios dédiée à GestionStock avec le token JWT
-const gsAxios = axios.create({ baseURL: GS_BASE })
+const gsAxios = axios.create({ baseURL: `${GS_BASE}${API_PREFIX}` })
 
 gsAxios.interceptors.request.use(config => {
   const token = localStorage.getItem(TOKEN_KEY)
@@ -61,7 +62,7 @@ gsAxios.interceptors.response.use(
 export const stockAuthApi = {
   login: (username: string, password: string) =>
     axios.post<{ token: string; username: string; role: string }>(
-      `${GS_BASE}/auth/login`, { username, password }
+      `${GS_BASE}${API_PREFIX}/auth/login`, { username, password }
     ).then(r => {
       localStorage.setItem(TOKEN_KEY, r.data.token)
       return r.data
