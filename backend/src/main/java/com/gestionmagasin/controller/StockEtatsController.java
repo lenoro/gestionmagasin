@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/etats")
+@RequestMapping("/etats")
 @CrossOrigin(origins = "*")
 public class StockEtatsController {
 

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/services-ref")
+@RequestMapping("/services-ref")
 @CrossOrigin(origins = "*")
 public class ServiceRefController {
 

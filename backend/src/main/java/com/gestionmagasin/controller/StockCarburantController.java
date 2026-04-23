@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/stock-carburant")
+@RequestMapping("/stock-carburant")
 @CrossOrigin(origins = "*")
 public class StockCarburantController {
 
