@@ -1,10 +1,10 @@
 import axios from 'axios'
 import type { BonApprovisionnement, BonDistribution, StockCarburant, Vehicule } from '../types/carburant'
 
-const VEH = 'http://localhost:8080/api/vehicules'
-const APPRO = 'http://localhost:8080/api/bons-approvisionnement'
-const DISTRIB = 'http://localhost:8080/api/bons-distribution'
-const STOCK = 'http://localhost:8080/api/stock-carburant'
+const VEH = '/api/vehicules'
+const APPRO = '/api/bons-approvisionnement'
+const DISTRIB = '/api/bons-distribution'
+const STOCK = '/api/stock-carburant'
 
 export const vehiculeApi = {
   findAll: () => axios.get<Vehicule[]>(VEH).then(r => r.data),

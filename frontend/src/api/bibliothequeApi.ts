@@ -1,7 +1,7 @@
 import axios from 'axios'
 import type { Ouvrage } from '../types/bibliotheque'
 
-const BASE = 'http://localhost:8080/api/ouvrages'
+const BASE = '/api/ouvrages'
 
 export const ouvrageApi = {
   findAll: () => axios.get<Ouvrage[]>(BASE).then(r => r.data),

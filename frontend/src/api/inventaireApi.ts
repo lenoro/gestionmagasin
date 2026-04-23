@@ -1,7 +1,7 @@
 import axios from 'axios'
 import type { BienInventaire, MouvementInventaire, Affectation, TransfertRequest, ReformeRequest } from '../types/inventaire'
 
-const BASE = 'http://localhost:8080/api'
+const BASE = '/api'
 
 export const inventaireApi = {
   findAll: () => axios.get<BienInventaire[]>(`${BASE}/inventaire`).then(r => r.data),

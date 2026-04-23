@@ -1,7 +1,7 @@
 import axios from 'axios'
 import type { BonEntree, BonSortie, ApprouverRequest, RejeterRequest } from '../types/rgbi'
 
-const BASE = 'http://localhost:8080/api'
+const BASE = '/api'
 
 export const bonEntreeApi = {
   findAll: () => axios.get<BonEntree[]>(`${BASE}/bons-entree`).then(r => r.data),

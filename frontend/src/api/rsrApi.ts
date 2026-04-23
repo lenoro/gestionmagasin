@@ -1,7 +1,7 @@
 import axios from 'axios'
 import type { FicheReparation } from '../types/rsr'
 
-const BASE = 'http://localhost:8080/api/fiches-reparation'
+const BASE = '/api/fiches-reparation'
 
 export const rsrApi = {
   findAll: () => axios.get<FicheReparation[]>(BASE).then(r => r.data),

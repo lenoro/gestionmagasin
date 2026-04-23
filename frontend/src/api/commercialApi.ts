@@ -1,7 +1,7 @@
 import axios from 'axios'
 import type { Article, Client, Vendeur, Facture } from '../types/commercial'
 
-const BASE = 'http://localhost:8080'
+const BASE = ''
 
 export const articleApi = {
   findAll: () => axios.get<Article[]>(`${BASE}/articles`).then(r => r.data),
