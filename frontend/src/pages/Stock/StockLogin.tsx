@@ -17,7 +17,7 @@ export default function StockLogin() {
     try {
       const res = await stockAuthApi.login(username.trim(), password)
       localStorage.setItem('gs_username', res.username)
-      navigate('/produits')
+      navigate('/')
     } catch {
       setError('Identifiants incorrects')
       setLoading(false)
