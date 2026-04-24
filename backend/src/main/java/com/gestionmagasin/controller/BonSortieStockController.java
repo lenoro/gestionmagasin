@@ -7,6 +7,7 @@ import com.gestionmagasin.repository.StockArticleRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -38,7 +39,13 @@ public class BonSortieStockController {
                 ligne.setBon(bon);
             }
         }
-        return ResponseEntity.ok(repo.save(bon));
+        BonSortieStock saved = repo.save(bon);
+        if (saved.getNumero() == null || saved.getNumero().isBlank()) {
+            int year = LocalDate.now().getYear();
+            saved.setNumero(String.format("SOR-%d-%04d", year, saved.getId()));
+            saved = repo.save(saved);
+        }
+        return ResponseEntity.ok(saved);
     }
 
     @PostMapping("/{id}/valider")
