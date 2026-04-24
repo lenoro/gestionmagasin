@@ -49,8 +49,7 @@ jobs:
           context: ./backend
           push: true
           tags: ghcr.io/lenoro/gestionmagasin/backend:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          no-cache: true
 
   deploy:
     needs: build-and-push
