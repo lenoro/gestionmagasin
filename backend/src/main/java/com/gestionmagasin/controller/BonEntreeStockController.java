@@ -2,8 +2,9 @@ package com.gestionmagasin.controller;
 
 import com.gestionmagasin.model.BonEntreeStock;
 import com.gestionmagasin.model.LigneBonEntreeStock;
-import com.gestionmagasin.model.StockArticle;
 import com.gestionmagasin.repository.BonEntreeStockRepository;
+import com.gestionmagasin.repository.DepotRepository;
+import com.gestionmagasin.repository.FournisseurRepository;
 import com.gestionmagasin.repository.StockArticleRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +19,15 @@ public class BonEntreeStockController {
 
     private final BonEntreeStockRepository repo;
     private final StockArticleRepository articleRepo;
+    private final FournisseurRepository fournisseurRepo;
+    private final DepotRepository depotRepo;
 
-    public BonEntreeStockController(BonEntreeStockRepository repo, StockArticleRepository articleRepo) {
+    public BonEntreeStockController(BonEntreeStockRepository repo, StockArticleRepository articleRepo,
+                                    FournisseurRepository fournisseurRepo, DepotRepository depotRepo) {
         this.repo = repo;
         this.articleRepo = articleRepo;
+        this.fournisseurRepo = fournisseurRepo;
+        this.depotRepo = depotRepo;
     }
 
     @GetMapping
@@ -35,6 +41,10 @@ public class BonEntreeStockController {
     @PostMapping
     @Transactional
     public ResponseEntity<BonEntreeStock> create(@RequestBody BonEntreeStock bon) {
+        if (bon.getFournisseur() != null && bon.getFournisseur().getId() != null)
+            bon.setFournisseur(fournisseurRepo.findById(bon.getFournisseur().getId()).orElse(null));
+        if (bon.getDepot() != null && bon.getDepot().getId() != null)
+            bon.setDepot(depotRepo.findById(bon.getDepot().getId()).orElse(null));
         if (bon.getLignes() != null) {
             for (LigneBonEntreeStock ligne : bon.getLignes()) {
                 ligne.setBon(bon);
@@ -44,9 +54,9 @@ public class BonEntreeStockController {
         if (saved.getNumero() == null || saved.getNumero().isBlank()) {
             int year = LocalDate.now().getYear();
             saved.setNumero(String.format("REC-%d-%04d", year, saved.getId()));
-            saved = repo.save(saved);
+            repo.save(saved);
         }
-        return ResponseEntity.ok(saved);
+        return repo.findById(saved.getId()).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/{id}/valider")

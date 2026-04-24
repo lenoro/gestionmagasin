@@ -3,6 +3,8 @@ package com.gestionmagasin.controller;
 import com.gestionmagasin.model.BonSortieStock;
 import com.gestionmagasin.model.LigneBonSortieStock;
 import com.gestionmagasin.repository.BonSortieStockRepository;
+import com.gestionmagasin.repository.DepotRepository;
+import com.gestionmagasin.repository.EmployeRepository;
 import com.gestionmagasin.repository.StockArticleRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +19,15 @@ public class BonSortieStockController {
 
     private final BonSortieStockRepository repo;
     private final StockArticleRepository articleRepo;
+    private final DepotRepository depotRepo;
+    private final EmployeRepository employeRepo;
 
-    public BonSortieStockController(BonSortieStockRepository repo, StockArticleRepository articleRepo) {
+    public BonSortieStockController(BonSortieStockRepository repo, StockArticleRepository articleRepo,
+                                    DepotRepository depotRepo, EmployeRepository employeRepo) {
         this.repo = repo;
         this.articleRepo = articleRepo;
+        this.depotRepo = depotRepo;
+        this.employeRepo = employeRepo;
     }
 
     @GetMapping
@@ -34,6 +41,10 @@ public class BonSortieStockController {
     @PostMapping
     @Transactional
     public ResponseEntity<BonSortieStock> create(@RequestBody BonSortieStock bon) {
+        if (bon.getDepot() != null && bon.getDepot().getId() != null)
+            bon.setDepot(depotRepo.findById(bon.getDepot().getId()).orElse(null));
+        if (bon.getEmploye() != null && bon.getEmploye().getId() != null)
+            bon.setEmploye(employeRepo.findById(bon.getEmploye().getId()).orElse(null));
         if (bon.getLignes() != null) {
             for (LigneBonSortieStock ligne : bon.getLignes()) {
                 ligne.setBon(bon);
@@ -43,9 +54,9 @@ public class BonSortieStockController {
         if (saved.getNumero() == null || saved.getNumero().isBlank()) {
             int year = LocalDate.now().getYear();
             saved.setNumero(String.format("SOR-%d-%04d", year, saved.getId()));
-            saved = repo.save(saved);
+            repo.save(saved);
         }
-        return ResponseEntity.ok(saved);
+        return repo.findById(saved.getId()).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/{id}/valider")
