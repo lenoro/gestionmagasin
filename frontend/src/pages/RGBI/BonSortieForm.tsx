@@ -5,7 +5,7 @@ import { bonSortieApi } from '../../api/rgbiApi'
 import type { BonSortie, LigneBonSortie, TypeBonSortie } from '../../types/rgbi'
 import LignesSortieEditor from '../../components/RGBI/LignesSortieEditor'
 
-const BASE = 'http://localhost:8080/api'
+const BASE = '/api'
 
 export default function BonSortieForm() {
   const navigate = useNavigate()

@@ -25,10 +25,10 @@ export default function FicheReparationForm() {
   const [lignes, setLignes] = useState<{ articleId: number | ''; quantite: number }[]>([])
 
   useEffect(() => {
-    axios.get<BienOption[]>('http://localhost:8080/api/biens-inventaire').then(r => setBiens(r.data)).catch(() => {})
-    axios.get<ArticleOption[]>('http://localhost:8080/api/articles')
+    axios.get<BienOption[]>('/api/biens-inventaire').then(r => setBiens(r.data)).catch(() => {})
+    axios.get<ArticleOption[]>('/api/articles')
       .then(r => setArticles(r.data.filter(a => a.categorie === 'CONSOMMABLE'))).catch(() => {})
-    axios.get<ProduitOption[]>('http://localhost:8080/api/produits').then(r => setProduits(r.data)).catch(() => {})
+    axios.get<ProduitOption[]>('/api/produits').then(r => setProduits(r.data)).catch(() => {})
   }, [])
 
   const ajouterLigne = () => setLignes(prev => [...prev, { articleId: '', quantite: 1 }])

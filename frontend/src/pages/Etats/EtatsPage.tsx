@@ -4,7 +4,7 @@ import { inventaireApi } from '../../api/inventaireApi'
 import type { Article } from '../../types/commercial'
 import type { BienInventaire } from '../../types/inventaire'
 
-const BASE = 'http://localhost:8080/api/etats'
+const BASE = '/api/etats'
 
 function today() {
   return new Date().toISOString().slice(0, 10)

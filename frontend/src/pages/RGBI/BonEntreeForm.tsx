@@ -5,7 +5,7 @@ import { bonEntreeApi } from '../../api/rgbiApi'
 import type { BonEntree, LigneBonEntree, TypeBonEntree } from '../../types/rgbi'
 import LignesEntreeEditor from '../../components/RGBI/LignesEntreeEditor'
 
-const BASE = 'http://localhost:8080/api'
+const BASE = '/api'
 
 export default function BonEntreeForm() {
   const navigate = useNavigate()
@@ -20,7 +20,7 @@ export default function BonEntreeForm() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    axios.get(`${BASE}/produits`).then(r => setFournisseurs(r.data))
+    axios.get(`${BASE}/producteurs`).then(r => setFournisseurs(r.data))
     axios.get(`${BASE}/affectations`).then(r => setAffectations(r.data))
     axios.get(`${BASE}/articles`).then(r =>
       setArticles(r.data.filter((a: any) => a.categorie === 'CONSOMMABLE'))

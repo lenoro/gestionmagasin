@@ -20,7 +20,7 @@ export default function BonApproForm() {
   const [observations, setObservations] = useState('')
 
   useEffect(() => {
-    axios.get<ProduitOption[]>('http://localhost:8080/api/produits').then(r => setProduits(r.data)).catch(() => {})
+    axios.get<ProduitOption[]>('/api/produits').then(r => setProduits(r.data)).catch(() => {})
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
