@@ -62,6 +62,8 @@ import FonctionForm from './pages/Stock/FonctionForm'
 import ServiceRefListe from './pages/Stock/ServiceRefListe'
 import ServiceRefForm from './pages/Stock/ServiceRefForm'
 import EtatsPage from './pages/Etats/EtatsPage'
+import ProducteurListe from './pages/RGBI/ProducteurListe'
+import AffectationListe from './pages/RGBI/AffectationListe'
 import Dashboard from './pages/Dashboard'
 import { ToastProvider } from './components/Toast'
 
@@ -184,6 +186,8 @@ function AppLayout() {
             <NavItem to="/inventaire" icon={<ClipboardList size={16} />}>Registre</NavItem>
             <NavItem to="/bons-entree" icon={<ArrowDownCircle size={16} />}>Bons d'entrée</NavItem>
             <NavItem to="/bons-sortie" icon={<ArrowUpCircle size={16} />}>Bons de sortie</NavItem>
+            <NavItem to="/producteurs" icon={<Truck size={16} />}>Producteurs</NavItem>
+            <NavItem to="/affectations" icon={<Building2 size={16} />}>Affectations</NavItem>
             <NavItem to="/etats" icon={<FileText size={16} />}>États &amp; fiches</NavItem>
 
             <SectionLabel>Réparations</SectionLabel>
@@ -281,6 +285,8 @@ function AppLayout() {
               <Route path="/services-ref" element={<ServiceRefListe />} />
               <Route path="/services-ref/new" element={<ServiceRefForm />} />
               <Route path="/services-ref/:id" element={<ServiceRefForm />} />
+              <Route path="/producteurs" element={<ProducteurListe />} />
+              <Route path="/affectations" element={<AffectationListe />} />
               <Route path="/etats" element={<EtatsPage />} />
               <Route path="/" element={<Dashboard />} />
             </Routes>
