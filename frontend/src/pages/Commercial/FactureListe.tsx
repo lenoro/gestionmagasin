@@ -3,6 +3,24 @@ import { useNavigate } from 'react-router-dom'
 import { factureApi } from '../../api/commercialApi'
 import type { Facture } from '../../types/commercial'
 
+const STATUT_FR: Record<string, string> = {
+  PAID: 'PAYÉ', UNPAID: 'IMPAYÉ', EMISE: 'ÉMISE', ÉMISE: 'ÉMISE', ANNULEE: 'ANNULÉE',
+}
+const STATUT_COLORS: Record<string, string> = {
+  PAID: 'bg-green-100 text-green-800',
+  PAYÉ: 'bg-green-100 text-green-800',
+  UNPAID: 'bg-orange-100 text-orange-800',
+  IMPAYÉ: 'bg-orange-100 text-orange-800',
+  ÉMISE: 'bg-blue-100 text-blue-800',
+  EMISE: 'bg-blue-100 text-blue-800',
+  ANNULÉE: 'bg-red-100 text-red-800',
+}
+
+function statutFr(s: string | undefined): string {
+  if (!s) return 'ÉMISE'
+  return STATUT_FR[s.toUpperCase()] ?? s
+}
+
 export default function FactureListe() {
   const navigate = useNavigate()
   const [factures, setFactures] = useState<Facture[]>([])
@@ -10,7 +28,13 @@ export default function FactureListe() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    factureApi.findAll().then(setFactures).catch(() => setError('Erreur chargement')).finally(() => setLoading(false))
+    factureApi.findAll()
+      .then(data => {
+        const unique = Array.from(new Map(data.map(f => [f.id, f])).values())
+        setFactures(unique)
+      })
+      .catch(() => setError('Erreur chargement'))
+      .finally(() => setLoading(false))
   }, [])
 
   if (loading) return <p className="p-6">Chargement…</p>
@@ -45,8 +69,8 @@ export default function FactureListe() {
                 <td className="px-4 py-2">{f.vendeur?.vendorName || '—'}</td>
                 <td className="px-4 py-2 text-right font-medium">{Number(f.totalAmount ?? 0).toFixed(2)}</td>
                 <td className="px-4 py-2">
-                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    {f.status || 'ÉMISE'}
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUT_COLORS[f.status?.toUpperCase() ?? ''] ?? 'bg-blue-100 text-blue-800'}`}>
+                    {statutFr(f.status)}
                   </span>
                 </td>
               </tr>

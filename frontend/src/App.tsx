@@ -56,6 +56,7 @@ import FonctionForm from './pages/Stock/FonctionForm'
 import ServiceRefListe from './pages/Stock/ServiceRefListe'
 import ServiceRefForm from './pages/Stock/ServiceRefForm'
 import EtatsPage from './pages/Etats/EtatsPage'
+import Dashboard from './pages/Dashboard'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -85,6 +86,7 @@ function NavItem({ to, children }: { to: string; children: React.ReactNode }) {
 function PageTitle() {
   const location = useLocation()
   const titles: Record<string, string> = {
+    '/': 'Tableau de bord',
     '/inventaire': "Registre d'inventaire",
     '/bons-entree': "Bons d'entrée",
     '/bons-sortie': 'Bons de sortie',
@@ -117,6 +119,7 @@ function AppLayout() {
         </div>
 
         <nav className="flex-1 px-2 pb-6">
+          <NavItem to="/">Tableau de bord</NavItem>
           <SectionLabel>Gestion Stock</SectionLabel>
           <NavItem to="/produits">Produits</NavItem>
           <NavItem to="/familles">Familles</NavItem>
@@ -231,7 +234,7 @@ function AppLayout() {
             <Route path="/services-ref/new" element={<ServiceRefForm />} />
             <Route path="/services-ref/:id" element={<ServiceRefForm />} />
             <Route path="/etats" element={<EtatsPage />} />
-            <Route path="/" element={<FactureListe />} />
+            <Route path="/" element={<Dashboard />} />
           </Routes>
         </main>
       </div>

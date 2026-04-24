@@ -30,7 +30,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/gestion_magasin
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/gestion_magasin?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&useUnicode=true&characterSetResults=UTF-8
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
     networks:
