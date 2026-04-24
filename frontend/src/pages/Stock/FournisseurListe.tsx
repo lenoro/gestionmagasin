@@ -7,9 +7,18 @@ export default function FournisseurListe() {
   const navigate = useNavigate()
   const [fournisseurs, setFournisseurs] = useState<Fournisseur[]>([])
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
 
   const load = () => fournisseurApi.findAll().then(setFournisseurs).finally(() => setLoading(false))
   useEffect(() => { load() }, [])
+
+  const filtered = fournisseurs.filter(f => {
+    const q = search.toLowerCase()
+    return !q || f.raisonSociale.toLowerCase().includes(q) ||
+      (f.code || '').toLowerCase().includes(q) ||
+      (f.ville || '').toLowerCase().includes(q) ||
+      (f.contactNom || '').toLowerCase().includes(q)
+  })
 
   const handleDelete = async (id: number) => {
     if (!confirm('Supprimer ce fournisseur ?')) return
@@ -28,6 +37,11 @@ export default function FournisseurListe() {
           + Nouveau fournisseur
         </button>
       </div>
+      <div className="mb-4">
+        <input value={search} onChange={e => setSearch(e.target.value)}
+          placeholder="Rechercher par raison sociale, code, ville…"
+          className="w-full max-w-sm border rounded px-3 py-2 text-sm" />
+      </div>
       <div className="bg-white rounded shadow overflow-hidden">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
@@ -42,7 +56,7 @@ export default function FournisseurListe() {
             </tr>
           </thead>
           <tbody>
-            {fournisseurs.map(f => (
+            {filtered.map(f => (
               <tr key={f.id} className="border-t hover:bg-gray-50">
                 <td className="px-4 py-3 font-mono text-sm">{f.code || '—'}</td>
                 <td className="px-4 py-3 font-medium">{f.raisonSociale}</td>
@@ -62,7 +76,7 @@ export default function FournisseurListe() {
                 </td>
               </tr>
             ))}
-            {fournisseurs.length === 0 && (
+            {filtered.length === 0 && (
               <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400">Aucun fournisseur</td></tr>
             )}
           </tbody>

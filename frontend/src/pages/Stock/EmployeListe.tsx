@@ -7,9 +7,19 @@ export default function EmployeListe() {
   const navigate = useNavigate()
   const [employes, setEmployes] = useState<Employe[]>([])
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
 
   const load = () => employeApi.findAll().then(setEmployes).finally(() => setLoading(false))
   useEffect(() => { load() }, [])
+
+  const filtered = employes.filter(e => {
+    const q = search.toLowerCase()
+    return !q || e.nom.toLowerCase().includes(q) ||
+      (e.prenom || '').toLowerCase().includes(q) ||
+      (e.matricule || '').toLowerCase().includes(q) ||
+      (e.fonction || '').toLowerCase().includes(q) ||
+      (e.service || '').toLowerCase().includes(q)
+  })
 
   const handleDelete = async (id: number) => {
     if (!confirm('Supprimer cet employé ?')) return
@@ -28,6 +38,11 @@ export default function EmployeListe() {
           + Nouvel employé
         </button>
       </div>
+      <div className="mb-4">
+        <input value={search} onChange={e => setSearch(e.target.value)}
+          placeholder="Rechercher par nom, matricule, fonction…"
+          className="w-full max-w-sm border rounded px-3 py-2 text-sm" />
+      </div>
       <div className="bg-white rounded shadow overflow-hidden">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
@@ -42,7 +57,7 @@ export default function EmployeListe() {
             </tr>
           </thead>
           <tbody>
-            {employes.map(e => (
+            {filtered.map(e => (
               <tr key={e.id} className="border-t hover:bg-gray-50">
                 <td className="px-4 py-3 font-mono text-sm">{e.matricule || '—'}</td>
                 <td className="px-4 py-3 font-medium">{e.nom} {e.prenom}</td>
@@ -62,7 +77,7 @@ export default function EmployeListe() {
                 </td>
               </tr>
             ))}
-            {employes.length === 0 && (
+            {filtered.length === 0 && (
               <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400">Aucun employé</td></tr>
             )}
           </tbody>

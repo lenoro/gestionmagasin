@@ -26,6 +26,7 @@ export default function FactureListe() {
   const [factures, setFactures] = useState<Facture[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     factureApi.findAll()
@@ -37,6 +38,13 @@ export default function FactureListe() {
       .finally(() => setLoading(false))
   }, [])
 
+  const filtered = factures.filter(f => {
+    const q = search.toLowerCase()
+    return !q || (f.invoiceNumber || '').toLowerCase().includes(q) ||
+      (f.client?.clientName || '').toLowerCase().includes(q) ||
+      (f.vendeur?.vendorName || '').toLowerCase().includes(q)
+  })
+
   if (loading) return <p className="p-6">Chargement…</p>
   if (error) return <p className="p-6 text-red-600">{error}</p>
 
@@ -46,6 +54,11 @@ export default function FactureListe() {
         <h1 className="text-2xl font-bold text-gray-800">Factures</h1>
         <button onClick={() => navigate('/factures/nouveau')}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Nouvelle facture</button>
+      </div>
+      <div className="mb-4">
+        <input value={search} onChange={e => setSearch(e.target.value)}
+          placeholder="Rechercher par numéro, client, vendeur…"
+          className="w-full max-w-sm border rounded px-3 py-2 text-sm" />
       </div>
       <div className="bg-white rounded shadow overflow-x-auto">
         <table className="min-w-full text-sm">
@@ -60,7 +73,7 @@ export default function FactureListe() {
             </tr>
           </thead>
           <tbody>
-            {factures.map(f => (
+            {filtered.map(f => (
               <tr key={f.id} className="border-t hover:bg-gray-50 cursor-pointer"
                 onClick={() => navigate(`/factures/${f.id}`)}>
                 <td className="px-4 py-2 font-mono font-medium">{f.invoiceNumber}</td>
@@ -75,7 +88,7 @@ export default function FactureListe() {
                 </td>
               </tr>
             ))}
-            {factures.length === 0 && (
+            {filtered.length === 0 && (
               <tr><td colSpan={6} className="px-4 py-6 text-center text-gray-400">Aucune facture</td></tr>
             )}
           </tbody>
