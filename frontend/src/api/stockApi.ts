@@ -121,19 +121,19 @@ export const produitApi = {
 }
 
 export const bonEntreeGSApi = {
-  findAll: () => gsAxios.get<BonEntreeGS[]>('/bons-entree').then(r => r.data),
-  findById: (id: number) => gsAxios.get<BonEntreeGS>(`/bons-entree/${id}`).then(r => r.data),
-  create: (b: BonEntreeGS) => gsAxios.post<BonEntreeGS>('/bons-entree', b).then(r => r.data),
-  valider: (id: number) => gsAxios.post(`/bons-entree/${id}/valider`).then(r => r.data),
-  annuler: (id: number) => gsAxios.post(`/bons-entree/${id}/annuler`).then(r => r.data),
-  delete: (id: number) => gsAxios.delete(`/bons-entree/${id}`),
+  findAll: () => gsAxios.get<BonEntreeGS[]>('/stock-bons-entree').then(r => r.data),
+  findById: (id: number) => gsAxios.get<BonEntreeGS>(`/stock-bons-entree/${id}`).then(r => r.data),
+  create: (b: BonEntreeGS) => gsAxios.post<BonEntreeGS>('/stock-bons-entree', b).then(r => r.data),
+  valider: (id: number) => gsAxios.post(`/stock-bons-entree/${id}/valider`).then(r => r.data),
+  annuler: (id: number) => gsAxios.post(`/stock-bons-entree/${id}/annuler`).then(r => r.data),
+  delete: (id: number) => gsAxios.delete(`/stock-bons-entree/${id}`),
 }
 
 export const bonSortieGSApi = {
-  findAll: () => gsAxios.get<BonSortieGS[]>('/bons-sortie').then(r => r.data),
-  findById: (id: number) => gsAxios.get<BonSortieGS>(`/bons-sortie/${id}`).then(r => r.data),
-  create: (b: BonSortieGS) => gsAxios.post<BonSortieGS>('/bons-sortie', b).then(r => r.data),
-  valider: (id: number) => gsAxios.post(`/bons-sortie/${id}/valider`).then(r => r.data),
-  annuler: (id: number) => gsAxios.post(`/bons-sortie/${id}/annuler`).then(r => r.data),
-  delete: (id: number) => gsAxios.delete(`/bons-sortie/${id}`),
+  findAll: () => gsAxios.get<BonSortieGS[]>('/stock-bons-sortie').then(r => r.data),
+  findById: (id: number) => gsAxios.get<BonSortieGS>(`/stock-bons-sortie/${id}`).then(r => r.data),
+  create: (b: BonSortieGS) => gsAxios.post<BonSortieGS>('/stock-bons-sortie', b).then(r => r.data),
+  valider: (id: number) => gsAxios.post(`/stock-bons-sortie/${id}/valider`).then(r => r.data),
+  annuler: (id: number) => gsAxios.post(`/stock-bons-sortie/${id}/annuler`).then(r => r.data),
+  delete: (id: number) => gsAxios.delete(`/stock-bons-sortie/${id}`),
 }
