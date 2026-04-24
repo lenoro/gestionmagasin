@@ -1,4 +1,4 @@
-import { Routes, Route, NavLink, useLocation } from 'react-router-dom'
+import { Routes, Route, NavLink, Navigate, useLocation } from 'react-router-dom'
 import InventaireListe from './pages/Inventaire/InventaireListe'
 import InventaireForm from './pages/Inventaire/InventaireForm'
 import InventaireFiche from './pages/Inventaire/InventaireFiche'
@@ -103,7 +103,10 @@ function PageTitle() {
   )
 }
 
-export default function App() {
+function AppLayout() {
+  const token = localStorage.getItem('gs_token')
+  if (!token) return <Navigate to="/gs-login" replace />
+
   return (
     <div className="flex h-screen bg-slate-100 overflow-hidden">
       {/* Sidebar */}
@@ -114,6 +117,19 @@ export default function App() {
         </div>
 
         <nav className="flex-1 px-2 pb-6">
+          <SectionLabel>Gestion Stock</SectionLabel>
+          <NavItem to="/produits">Produits</NavItem>
+          <NavItem to="/familles">Familles</NavItem>
+          <NavItem to="/unites">Unités</NavItem>
+          <NavItem to="/fournisseurs">Fournisseurs</NavItem>
+          <NavItem to="/depots">Dépôts</NavItem>
+          <NavItem to="/employes">Employés</NavItem>
+          <NavItem to="/grades">Grades</NavItem>
+          <NavItem to="/fonctions">Fonctions</NavItem>
+          <NavItem to="/services-ref">Services</NavItem>
+          <NavItem to="/stock-entrees">Réceptions</NavItem>
+          <NavItem to="/stock-sorties">Sorties stock</NavItem>
+
           <SectionLabel>Inventaire</SectionLabel>
           <NavItem to="/inventaire">Registre</NavItem>
           <NavItem to="/bons-entree">Bons d'entrée</NavItem>
@@ -136,19 +152,6 @@ export default function App() {
           <NavItem to="/clients">Clients</NavItem>
           <NavItem to="/vendeurs">Vendeurs</NavItem>
           <NavItem to="/factures">Factures</NavItem>
-
-          <SectionLabel>Gestion Stock</SectionLabel>
-          <NavItem to="/produits">Produits</NavItem>
-          <NavItem to="/familles">Familles</NavItem>
-          <NavItem to="/unites">Unités</NavItem>
-          <NavItem to="/fournisseurs">Fournisseurs</NavItem>
-          <NavItem to="/depots">Dépôts</NavItem>
-          <NavItem to="/employes">Employés</NavItem>
-          <NavItem to="/grades">Grades</NavItem>
-          <NavItem to="/fonctions">Fonctions</NavItem>
-          <NavItem to="/services-ref">Services</NavItem>
-          <NavItem to="/stock-entrees">Réceptions</NavItem>
-          <NavItem to="/stock-sorties">Sorties stock</NavItem>
         </nav>
       </aside>
 
@@ -227,12 +230,20 @@ export default function App() {
             <Route path="/services-ref" element={<ServiceRefListe />} />
             <Route path="/services-ref/new" element={<ServiceRefForm />} />
             <Route path="/services-ref/:id" element={<ServiceRefForm />} />
-            <Route path="/gs-login" element={<StockLogin />} />
             <Route path="/etats" element={<EtatsPage />} />
             <Route path="/" element={<FactureListe />} />
           </Routes>
         </main>
       </div>
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/gs-login" element={<StockLogin />} />
+      <Route path="/*" element={<AppLayout />} />
+    </Routes>
   )
 }
