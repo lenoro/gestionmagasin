@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Package, Tag, Ruler, Truck, Warehouse, Users, Award, Briefcase, Building2,
   PackageCheck, PackageMinus, ClipboardList, ArrowDownCircle, ArrowUpCircle, FileText,
   Wrench, Car, Fuel, Share2, BookOpen, ShoppingBag, UserCircle, UserCheck, FileSpreadsheet,
-  LogOut, ChevronRight, GraduationCap, AlertTriangle, BookMarked,
+  LogOut, ChevronRight, GraduationCap, AlertTriangle, BookMarked, HelpCircle,
 } from 'lucide-react'
 import InventaireListe from './pages/Inventaire/InventaireListe'
 import InventaireForm from './pages/Inventaire/InventaireForm'
@@ -62,6 +62,7 @@ import FonctionForm from './pages/Stock/FonctionForm'
 import ServiceRefListe from './pages/Stock/ServiceRefListe'
 import ServiceRefForm from './pages/Stock/ServiceRefForm'
 import EtatsPage from './pages/Etats/EtatsPage'
+import AidePage from './pages/AidePage'
 import ProducteurListe from './pages/RGBI/ProducteurListe'
 import AffectationListe from './pages/RGBI/AffectationListe'
 import ConsommateurListe from './pages/RGBI/ConsommateurListe'
@@ -116,6 +117,7 @@ function PageTitle() {
     '/bons-distribution': 'Distributions carburant',
     '/ouvrages': 'Registre des ouvrages',
     '/etats': 'États et fiches',
+    '/aide': "Guide d'utilisation",
   }
   const parts = location.pathname.split('/').filter(Boolean)
   const base = parts.length ? '/' + parts[0] : '/'
@@ -220,6 +222,9 @@ function AppLayout() {
             <NavItem to="/clients" icon={<UserCircle size={16} />}>Clients</NavItem>
             <NavItem to="/vendeurs" icon={<UserCheck size={16} />}>Vendeurs</NavItem>
             <NavItem to="/factures" icon={<FileSpreadsheet size={16} />}>Factures</NavItem>
+
+            <SectionLabel>Aide</SectionLabel>
+            <NavItem to="/aide" icon={<HelpCircle size={16} />}>Guide d'utilisation</NavItem>
           </nav>
 
           <UserFooter />
@@ -307,6 +312,7 @@ function AppLayout() {
               <Route path="/etat-besoins" element={<EtatDesBesoins />} />
               <Route path="/rapports" element={<RapportsPage />} />
               <Route path="/etats" element={<EtatsPage />} />
+              <Route path="/aide" element={<AidePage />} />
               <Route path="/" element={<Dashboard />} />
             </Routes>
           </main>
