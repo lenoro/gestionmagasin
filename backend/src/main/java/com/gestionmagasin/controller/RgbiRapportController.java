@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/rapports")
+@RequestMapping("/rapports")
 public class RgbiRapportController {
 
     private final RgbiRapportService service;
