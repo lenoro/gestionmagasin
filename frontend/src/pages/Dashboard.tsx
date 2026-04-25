@@ -79,10 +79,6 @@ export default function Dashboard() {
     .sort((a: any, b: any) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
     .slice(0, 5)
 
-  const produitsAlertesGS = produits
-    .filter(p => (p.stockActuel ?? 0) <= (p.stockMinimum ?? 0))
-    .slice(0, 4)
-
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Tableau de bord</h1>
