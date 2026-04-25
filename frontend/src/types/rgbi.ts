@@ -67,3 +67,46 @@ export interface ApprouverRequest {
 export interface RejeterRequest {
   motif: string
 }
+
+// ── Rapports ─────────────────────────────────────────────────────
+export interface FiltresRapport {
+  dateDebut?: string
+  dateFin?: string
+  fournisseurId?: number
+  affectationId?: number
+  consommateurId?: number
+}
+
+export interface LigneConsommation {
+  articleCode: string
+  articleName: string
+  numNomenclature: string
+  unitesMesure: string
+  qteTotal: number
+  services: string
+  consommateurs: string
+}
+
+export interface ArticleBesoin {
+  articleCode: string
+  articleName: string
+  numNomenclature: string
+  unitesMesure: string
+  stockActuel: number
+  stockMinimum: number
+  qteACommander: number
+}
+
+export interface BienInventaireRapport {
+  id: number
+  numeroInventaire: string
+  designation: string
+  marqueModele?: string
+  dateAcquisition: string
+  prixAchat: number
+  etatMateriel: string
+  statut: string
+  affectation?: { id: number; libelle: string }
+  affectationLibre?: string
+  observations?: string
+}
