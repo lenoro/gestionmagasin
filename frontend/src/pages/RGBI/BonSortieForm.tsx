@@ -43,7 +43,7 @@ export default function BonSortieForm() {
       lignes: form.lignes.map(l => ({ ...l, article: { id: l.article.id } }))
     }
     try {
-      await bonSortieApi.create(payload)
+      await bonSortieApi.create(payload as any)
       navigate('/bons-sortie')
     } catch (err: any) {
       setError(err.response?.data?.message ?? "Erreur lors de la création")

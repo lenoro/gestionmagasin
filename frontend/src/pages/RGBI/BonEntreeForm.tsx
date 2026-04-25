@@ -39,7 +39,7 @@ export default function BonEntreeForm() {
       lignes: form.lignes.map(l => ({ ...l, article: { id: l.article.id } }))
     }
     try {
-      await bonEntreeApi.create(payload)
+      await bonEntreeApi.create(payload as any)
       navigate('/bons-entree')
     } catch (err: any) {
       setError(err.response?.data?.message ?? "Erreur lors de la création")

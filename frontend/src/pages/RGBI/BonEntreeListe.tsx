@@ -59,7 +59,7 @@ export default function BonEntreeListe() {
                 <td className="px-4 py-2">{TYPE_LABELS[b.typeBon]}</td>
                 <td className="px-4 py-2">{b.dateBon}</td>
                 <td className="px-4 py-2">
-                  {b.fournisseur?.producerName ?? b.serviceSource?.libelle ?? '—'}
+                  {b.fournisseur?.raisonSociale ?? b.serviceSource?.libelle ?? '—'}
                 </td>
                 <td className="px-4 py-2">{b.lignes.length} article(s)</td>
                 <td className="px-4 py-2">

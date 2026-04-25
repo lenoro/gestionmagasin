@@ -43,7 +43,7 @@ export default function BonEntreeFiche() {
       <div className="bg-white shadow rounded p-6 grid grid-cols-2 gap-4 text-sm">
         <div><span className="font-medium">Type :</span> {bon.typeBon.replace('_', ' ')}</div>
         <div><span className="font-medium">Date :</span> {bon.dateBon}</div>
-        <div><span className="font-medium">Source :</span> {bon.fournisseur?.producerName ?? bon.serviceSource?.libelle ?? '—'}</div>
+        <div><span className="font-medium">Source :</span> {bon.fournisseur?.raisonSociale ?? bon.serviceSource?.libelle ?? '—'}</div>
         <div><span className="font-medium">Statut :</span> {bon.statut}</div>
         <div><span className="font-medium">Visa :</span> {bon.visa ?? '—'}</div>
         {bon.observations && <div className="col-span-2"><span className="font-medium">Observations :</span> {bon.observations}</div>}
