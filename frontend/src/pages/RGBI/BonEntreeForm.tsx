@@ -33,8 +33,13 @@ export default function BonEntreeForm() {
     e.preventDefault()
     setError('')
     if (form.lignes.length === 0) { setError('Ajoutez au moins une ligne'); return }
+    // Envoyer uniquement l'id de l'article pour éviter les problèmes @JsonIdentityInfo
+    const payload = {
+      ...form,
+      lignes: form.lignes.map(l => ({ ...l, article: { id: l.article.id } }))
+    }
     try {
-      await bonEntreeApi.create(form)
+      await bonEntreeApi.create(payload)
       navigate('/bons-entree')
     } catch (err: any) {
       setError(err.response?.data?.message ?? "Erreur lors de la création")

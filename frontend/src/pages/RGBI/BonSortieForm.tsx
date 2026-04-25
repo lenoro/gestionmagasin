@@ -38,8 +38,12 @@ export default function BonSortieForm() {
     setError('')
     if (form.lignes.length === 0) { setError('Ajoutez au moins une ligne'); return }
     if (!form.serviceDestination.id) { setError('Choisissez un service destination'); return }
+    const payload = {
+      ...form,
+      lignes: form.lignes.map(l => ({ ...l, article: { id: l.article.id } }))
+    }
     try {
-      await bonSortieApi.create(form)
+      await bonSortieApi.create(payload)
       navigate('/bons-sortie')
     } catch (err: any) {
       setError(err.response?.data?.message ?? "Erreur lors de la création")
