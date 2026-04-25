@@ -18,9 +18,10 @@ public class ArticleController {
     }
 
     @GetMapping
-    public List<Article> getAll() {
-        return repo.findAll();
-    }
+    public List<Article> getAll() { return repo.findAll(); }
+
+    @GetMapping("/alertes")
+    public List<Article> getAlertes() { return repo.findAlertes(); }
 
     @GetMapping("/{id}")
     public ResponseEntity<Article> getById(@PathVariable Long id) {
@@ -49,6 +50,10 @@ public class ArticleController {
             a.setDescription(data.getDescription());
             a.setPrice(data.getPrice());
             a.setStock(data.getStock());
+            a.setCategorie(data.getCategorie());
+            a.setStockMinimum(data.getStockMinimum());
+            a.setNumNomenclature(data.getNumNomenclature());
+            a.setUnitesMesure(data.getUnitesMesure());
             a.setProducteur(data.getProducteur());
             return ResponseEntity.ok(repo.save(a));
         }).orElse(ResponseEntity.notFound().build());

@@ -1,8 +1,7 @@
 package com.gestionmagasin.service;
 
 import com.gestionmagasin.model.*;
-import com.gestionmagasin.repository.ArticleRepository;
-import com.gestionmagasin.repository.BonSortieRepository;
+import com.gestionmagasin.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,10 +15,15 @@ public class BonSortieService {
 
     private final BonSortieRepository bonRepo;
     private final ArticleRepository articleRepo;
+    private final AffectationRepository affectationRepo;
+    private final ConsommateurRepository consommateurRepo;
 
-    public BonSortieService(BonSortieRepository bonRepo, ArticleRepository articleRepo) {
+    public BonSortieService(BonSortieRepository bonRepo, ArticleRepository articleRepo,
+                            AffectationRepository affectationRepo, ConsommateurRepository consommateurRepo) {
         this.bonRepo = bonRepo;
         this.articleRepo = articleRepo;
+        this.affectationRepo = affectationRepo;
+        this.consommateurRepo = consommateurRepo;
     }
 
     public String genererNumeroBon() {
@@ -31,10 +35,25 @@ public class BonSortieService {
     }
 
     public BonSortie creer(BonSortie bon) {
+        // Résoudre les entités managées
+        if (bon.getServiceDestination() != null && bon.getServiceDestination().getId() != null) {
+            bon.setServiceDestination(affectationRepo.findById(bon.getServiceDestination().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Service destination introuvable")));
+        }
+        if (bon.getConsommateur() != null && bon.getConsommateur().getId() != null) {
+            bon.setConsommateur(consommateurRepo.findById(bon.getConsommateur().getId()).orElse(null));
+        }
         for (LigneBonSortie ligne : bon.getLignes()) {
-            if (ligne.getArticle().getCategorie() != CategorieArticle.CONSOMMABLE) {
-                throw new IllegalArgumentException(
-                    "L'article " + ligne.getArticle().getArticleCode() + " n'est pas CONSOMMABLE");
+            if (ligne.getArticle() != null && ligne.getArticle().getId() != null) {
+                Article article = articleRepo.findById(ligne.getArticle().getId())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                        "Article introuvable : " + ligne.getArticle().getId()));
+                ligne.setArticle(article);
+                if (article.getCategorie() != CategorieArticle.CONSOMMABLE) {
+                    throw new IllegalArgumentException(
+                        "L'article '" + article.getArticleName() + "' n'est pas consomptible. " +
+                        "Pour les biens durables, utilisez le module Inventaire (Transfert).");
+                }
             }
             ligne.setBon(bon);
         }
@@ -67,9 +86,7 @@ public class BonSortieService {
         return bonRepo.save(bon);
     }
 
-    public List<BonSortie> findAll() {
-        return bonRepo.findAll();
-    }
+    public List<BonSortie> findAll() { return bonRepo.findAll(); }
 
     public BonSortie findById(Long id) {
         return bonRepo.findById(id)
@@ -81,8 +98,8 @@ public class BonSortieService {
             Article article = ligne.getArticle();
             if (article.getStock() < ligne.getQuantite()) {
                 throw new IllegalStateException(
-                    "Stock insuffisant pour : " + article.getArticleCode() +
-                    " (disponible: " + article.getStock() + ", demandé: " + ligne.getQuantite() + ")");
+                    "Stock insuffisant pour '" + article.getArticleName() +
+                    "' (disponible: " + article.getStock() + ", demandé: " + ligne.getQuantite() + ")");
             }
             article.setStock(article.getStock() - ligne.getQuantite());
             articleRepo.save(article);

@@ -27,6 +27,17 @@ public class BonSortie {
     @JoinColumn(name = "service_destination_id", nullable = false)
     private Affectation serviceDestination;
 
+    @ManyToOne
+    @JoinColumn(name = "consommateur_id")
+    private Consommateur consommateur;
+
+    @Column(name = "type_sortie", length = 30)
+    @Enumerated(EnumType.STRING)
+    private TypeSortie typeSortie;
+
+    @Column(name = "visa_demandeur")
+    private String visaDemandeur;
+
     @Column(name = "statut", nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
     private StatutBonSortie statut;
@@ -56,6 +67,12 @@ public class BonSortie {
     public void setDateBon(LocalDate dateBon) { this.dateBon = dateBon; }
     public Affectation getServiceDestination() { return serviceDestination; }
     public void setServiceDestination(Affectation serviceDestination) { this.serviceDestination = serviceDestination; }
+    public Consommateur getConsommateur() { return consommateur; }
+    public void setConsommateur(Consommateur consommateur) { this.consommateur = consommateur; }
+    public TypeSortie getTypeSortie() { return typeSortie; }
+    public void setTypeSortie(TypeSortie typeSortie) { this.typeSortie = typeSortie; }
+    public String getVisaDemandeur() { return visaDemandeur; }
+    public void setVisaDemandeur(String visaDemandeur) { this.visaDemandeur = visaDemandeur; }
     public StatutBonSortie getStatut() { return statut; }
     public void setStatut(StatutBonSortie statut) { this.statut = statut; }
     public String getVisaMagasinier() { return visaMagasinier; }

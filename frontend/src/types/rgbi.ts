@@ -2,10 +2,21 @@ export type TypeBonEntree = 'COMMANDE_FOURNISSEUR' | 'RETOUR_SERVICE'
 export type TypeBonSortie = 'DEMANDE' | 'SORTIE_DIRECTE'
 export type StatutBonEntree = 'BROUILLON' | 'VALIDE'
 export type StatutBonSortie = 'EN_ATTENTE' | 'APPROUVE' | 'TRAITE' | 'REJETE'
+export type TypeSortie = 'CONSOMMATION_TP' | 'PRET_OUTILLAGE' | 'ADMINISTRATION'
+export type TypeConsommateur = 'ENSEIGNANT' | 'STAGIAIRE' | 'ADMINISTRATION'
+
+export interface Consommateur {
+  id?: number
+  nomPrenom: string
+  serviceAtelier?: string
+  typeConsommateur: TypeConsommateur
+  telephone?: string
+  actif?: boolean
+}
 
 export interface LigneBonEntree {
   id?: number
-  article: { id: number; articleCode: string; articleName: string; stock: number }
+  article: { id: number; articleCode: string; articleName: string; stock: number; categorie?: string }
   quantite: number
   prixUnitaire: number
 }
@@ -21,7 +32,9 @@ export interface BonEntree {
   numeroBon?: string
   typeBon: TypeBonEntree
   dateBon: string
-  fournisseur?: { id: number; producerName: string }
+  fournisseur?: { id: number; raisonSociale: string; code?: string }
+  numBonLivraison?: string
+  numBonCommande?: string
   serviceSource?: { id: number; libelle: string }
   statut?: StatutBonEntree
   visa?: string
@@ -34,9 +47,12 @@ export interface BonSortie {
   id?: number
   numeroBon?: string
   typeBon: TypeBonSortie
+  typeSortie?: TypeSortie
   dateBon: string
   serviceDestination: { id: number; libelle: string }
+  consommateur?: { id: number; nomPrenom: string; serviceAtelier?: string }
   statut?: StatutBonSortie
+  visaDemandeur?: string
   visaMagasinier?: string
   visaApprobateur?: string
   observations?: string

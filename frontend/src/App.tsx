@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Package, Tag, Ruler, Truck, Warehouse, Users, Award, Briefcase, Building2,
   PackageCheck, PackageMinus, ClipboardList, ArrowDownCircle, ArrowUpCircle, FileText,
   Wrench, Car, Fuel, Share2, BookOpen, ShoppingBag, UserCircle, UserCheck, FileSpreadsheet,
-  LogOut, ChevronRight,
+  LogOut, ChevronRight, GraduationCap, AlertTriangle, BookMarked,
 } from 'lucide-react'
 import InventaireListe from './pages/Inventaire/InventaireListe'
 import InventaireForm from './pages/Inventaire/InventaireForm'
@@ -64,6 +64,10 @@ import ServiceRefForm from './pages/Stock/ServiceRefForm'
 import EtatsPage from './pages/Etats/EtatsPage'
 import ProducteurListe from './pages/RGBI/ProducteurListe'
 import AffectationListe from './pages/RGBI/AffectationListe'
+import ConsommateurListe from './pages/RGBI/ConsommateurListe'
+import StagiaireListe from './pages/RGBI/StagiaireListe'
+import BienInventaireListe from './pages/RGBI/BienInventaireListe'
+import EtatDesBesoins from './pages/RGBI/EtatDesBesoins'
 import Dashboard from './pages/Dashboard'
 import { ToastProvider } from './components/Toast'
 
@@ -98,8 +102,12 @@ function PageTitle() {
   const titles: Record<string, string> = {
     '/': 'Tableau de bord',
     '/inventaire': "Registre d'inventaire",
+    '/grand-livre': "Grand Livre d'Inventaire",
     '/bons-entree': "Bons d'entrée",
     '/bons-sortie': 'Bons de sortie',
+    '/consommateurs': 'Demandeurs / Consommateurs',
+    '/stagiaires': 'Stagiaires',
+    '/etat-besoins': 'État des besoins',
     '/fiches-reparation': 'Fiches de réparation',
     '/vehicules': 'Gestion des véhicules',
     '/bons-approvisionnement': 'Approvisionnement carburant',
@@ -182,12 +190,15 @@ function AppLayout() {
             <NavItem to="/stock-entrees" icon={<PackageCheck size={16} />}>Réceptions</NavItem>
             <NavItem to="/stock-sorties" icon={<PackageMinus size={16} />}>Sorties stock</NavItem>
 
-            <SectionLabel>Inventaire</SectionLabel>
-            <NavItem to="/inventaire" icon={<ClipboardList size={16} />}>Registre</NavItem>
+            <SectionLabel>Inventaire CFPA</SectionLabel>
+            <NavItem to="/grand-livre" icon={<BookMarked size={16} />}>Grand Livre</NavItem>
             <NavItem to="/bons-entree" icon={<ArrowDownCircle size={16} />}>Bons d'entrée</NavItem>
             <NavItem to="/bons-sortie" icon={<ArrowUpCircle size={16} />}>Bons de sortie</NavItem>
-            <NavItem to="/producteurs" icon={<Truck size={16} />}>Producteurs</NavItem>
+            <NavItem to="/consommateurs" icon={<UserCheck size={16} />}>Demandeurs</NavItem>
+            <NavItem to="/stagiaires" icon={<GraduationCap size={16} />}>Stagiaires</NavItem>
             <NavItem to="/affectations" icon={<Building2 size={16} />}>Affectations</NavItem>
+            <NavItem to="/etat-besoins" icon={<AlertTriangle size={16} />}>État des besoins</NavItem>
+            <NavItem to="/inventaire" icon={<ClipboardList size={16} />}>Biens inventaire</NavItem>
             <NavItem to="/etats" icon={<FileText size={16} />}>États &amp; fiches</NavItem>
 
             <SectionLabel>Réparations</SectionLabel>
@@ -287,6 +298,10 @@ function AppLayout() {
               <Route path="/services-ref/:id" element={<ServiceRefForm />} />
               <Route path="/producteurs" element={<ProducteurListe />} />
               <Route path="/affectations" element={<AffectationListe />} />
+              <Route path="/consommateurs" element={<ConsommateurListe />} />
+              <Route path="/stagiaires" element={<StagiaireListe />} />
+              <Route path="/grand-livre" element={<BienInventaireListe />} />
+              <Route path="/etat-besoins" element={<EtatDesBesoins />} />
               <Route path="/etats" element={<EtatsPage />} />
               <Route path="/" element={<Dashboard />} />
             </Routes>

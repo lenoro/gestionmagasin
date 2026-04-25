@@ -20,11 +20,9 @@ export default function BonEntreeForm() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    axios.get(`${BASE}/producteurs`).then(r => setFournisseurs(r.data))
+    axios.get(`${BASE}/fournisseurs`).then(r => setFournisseurs(r.data))
     axios.get(`${BASE}/affectations`).then(r => setAffectations(r.data))
-    axios.get(`${BASE}/articles`).then(r =>
-      setArticles(r.data.filter((a: any) => a.categorie === 'CONSOMMABLE'))
-    )
+    axios.get(`${BASE}/articles`).then(r => setArticles(r.data))
   }, [])
 
   function set(field: keyof BonEntree, value: unknown) {
@@ -66,14 +64,28 @@ export default function BonEntreeForm() {
         </div>
 
         {form.typeBon === 'COMMANDE_FOURNISSEUR' ? (
-          <div>
-            <label className="block text-sm font-medium mb-1">Fournisseur</label>
-            <select value={form.fournisseur?.id ?? ''}
-              onChange={e => set('fournisseur', fournisseurs.find(f => f.id === Number(e.target.value)))}
-              className="w-full border rounded px-3 py-2">
-              <option value="">-- Choisir --</option>
-              {fournisseurs.map(f => <option key={f.id} value={f.id}>{f.producerName}</option>)}
-            </select>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Fournisseur</label>
+              <select value={form.fournisseur?.id ?? ''}
+                onChange={e => set('fournisseur', fournisseurs.find(f => f.id === Number(e.target.value)))}
+                className="w-full border rounded px-3 py-2">
+                <option value="">-- Choisir --</option>
+                {fournisseurs.map(f => (
+                  <option key={f.id} value={f.id}>{f.raisonSociale}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">N° Bon de livraison</label>
+              <input value={form.numBonLivraison ?? ''} onChange={e => set('numBonLivraison', e.target.value)}
+                placeholder="Ex: BL-2025-001" className="w-full border rounded px-3 py-2" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">N° Bon de commande</label>
+              <input value={form.numBonCommande ?? ''} onChange={e => set('numBonCommande', e.target.value)}
+                placeholder="Ex: BC-2025-001" className="w-full border rounded px-3 py-2" />
+            </div>
           </div>
         ) : (
           <div>

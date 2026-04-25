@@ -25,7 +25,13 @@ public class BonEntree {
 
     @ManyToOne
     @JoinColumn(name = "fournisseur_id")
-    private Produit fournisseur;
+    private Fournisseur fournisseur;
+
+    @Column(name = "num_bon_livraison", length = 30)
+    private String numBonLivraison;
+
+    @Column(name = "num_bon_commande", length = 30)
+    private String numBonCommande;
 
     @ManyToOne
     @JoinColumn(name = "service_source_id")
@@ -55,8 +61,12 @@ public class BonEntree {
     public void setTypeBon(TypeBonEntree typeBon) { this.typeBon = typeBon; }
     public LocalDate getDateBon() { return dateBon; }
     public void setDateBon(LocalDate dateBon) { this.dateBon = dateBon; }
-    public Produit getFournisseur() { return fournisseur; }
-    public void setFournisseur(Produit fournisseur) { this.fournisseur = fournisseur; }
+    public Fournisseur getFournisseur() { return fournisseur; }
+    public void setFournisseur(Fournisseur fournisseur) { this.fournisseur = fournisseur; }
+    public String getNumBonLivraison() { return numBonLivraison; }
+    public void setNumBonLivraison(String numBonLivraison) { this.numBonLivraison = numBonLivraison; }
+    public String getNumBonCommande() { return numBonCommande; }
+    public void setNumBonCommande(String numBonCommande) { this.numBonCommande = numBonCommande; }
     public Affectation getServiceSource() { return serviceSource; }
     public void setServiceSource(Affectation serviceSource) { this.serviceSource = serviceSource; }
     public StatutBonEntree getStatut() { return statut; }

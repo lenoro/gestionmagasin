@@ -35,6 +35,15 @@ public class Article {
     @Enumerated(EnumType.STRING)
     private CategorieArticle categorie = CategorieArticle.CONSOMMABLE;
 
+    @Column(name = "stock_minimum")
+    private Double stockMinimum;
+
+    @Column(name = "num_nomenclature", length = 30)
+    private String numNomenclature;
+
+    @Column(name = "unites_mesure", length = 20)
+    private String unitesMesure;
+
     @ManyToOne
     @JoinColumn(name = "producer_id")
     private Produit producteur;
@@ -53,6 +62,12 @@ public class Article {
     public void setStock(int stock) { this.stock = stock; }
     public CategorieArticle getCategorie() { return categorie; }
     public void setCategorie(CategorieArticle categorie) { this.categorie = categorie; }
+    public Double getStockMinimum() { return stockMinimum; }
+    public void setStockMinimum(Double stockMinimum) { this.stockMinimum = stockMinimum; }
+    public String getNumNomenclature() { return numNomenclature; }
+    public void setNumNomenclature(String numNomenclature) { this.numNomenclature = numNomenclature; }
+    public String getUnitesMesure() { return unitesMesure; }
+    public void setUnitesMesure(String unitesMesure) { this.unitesMesure = unitesMesure; }
     public Produit getProducteur() { return producteur; }
     public void setProducteur(Produit producteur) { this.producteur = producteur; }
 }
