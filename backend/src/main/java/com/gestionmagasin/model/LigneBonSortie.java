@@ -1,5 +1,6 @@
 package com.gestionmagasin.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -23,6 +24,7 @@ public class LigneBonSortie {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    @JsonIgnore
     public BonSortie getBon() { return bon; }
     public void setBon(BonSortie bon) { this.bon = bon; }
     public Article getArticle() { return article; }
