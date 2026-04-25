@@ -120,7 +120,7 @@ public class StockEtatsService {
             for (BonEntree bon : bons) {
                 for (LigneBonEntree ligne : bon.getLignes()) {
                     table.addCell(cellule(bon.getDateBon().format(FMT), cf));
-                    String prov = bon.getFournisseur() != null ? bon.getFournisseur().getProducerName()
+                    String prov = bon.getFournisseur() != null ? bon.getFournisseur().getRaisonSociale()
                         : (bon.getServiceSource() != null ? bon.getServiceSource().getLibelle() : "");
                     table.addCell(cellule(prov, cf));
                     table.addCell(cellule(ligne.getArticle().getArticleName(), cf));

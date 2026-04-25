@@ -50,7 +50,7 @@ public class RgbiExportService {
                 table.addCell(new Phrase(b.getTypeBon().name(), cf));
                 table.addCell(new Phrase(b.getDateBon().toString(), cf));
                 String source = b.getFournisseur() != null
-                    ? b.getFournisseur().getProducerName()
+                    ? b.getFournisseur().getRaisonSociale()
                     : (b.getServiceSource() != null ? b.getServiceSource().getLibelle() : "—");
                 table.addCell(new Phrase(source, cf));
                 table.addCell(new Phrase(b.getStatut().name(), cf));
@@ -102,7 +102,7 @@ public class RgbiExportService {
             doc.add(new Paragraph("Type : " + bon.getTypeBon().name(), valFont));
             doc.add(new Paragraph("Date : " + bon.getDateBon(), valFont));
             String source = bon.getFournisseur() != null
-                ? "Fournisseur : " + bon.getFournisseur().getProducerName()
+                ? "Fournisseur : " + bon.getFournisseur().getRaisonSociale()
                 : "Service source : " + (bon.getServiceSource() != null ? bon.getServiceSource().getLibelle() : "—");
             doc.add(new Paragraph(source, valFont));
             doc.add(new Paragraph("Statut : " + bon.getStatut().name(), valFont));
@@ -170,7 +170,7 @@ public class RgbiExportService {
                 row.createCell(0).setCellValue(b.getNumeroBon());
                 row.createCell(1).setCellValue(b.getTypeBon().name());
                 row.createCell(2).setCellValue(b.getDateBon().toString());
-                String src = b.getFournisseur() != null ? b.getFournisseur().getProducerName()
+                String src = b.getFournisseur() != null ? b.getFournisseur().getRaisonSociale()
                     : (b.getServiceSource() != null ? b.getServiceSource().getLibelle() : "");
                 row.createCell(3).setCellValue(src);
                 row.createCell(4).setCellValue(b.getStatut().name());
