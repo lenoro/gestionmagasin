@@ -68,6 +68,7 @@ import ConsommateurListe from './pages/RGBI/ConsommateurListe'
 import StagiaireListe from './pages/RGBI/StagiaireListe'
 import BienInventaireListe from './pages/RGBI/BienInventaireListe'
 import EtatDesBesoins from './pages/RGBI/EtatDesBesoins'
+import RapportsPage from './pages/RGBI/RapportsPage'
 import Dashboard from './pages/Dashboard'
 import { ToastProvider } from './components/Toast'
 
@@ -108,6 +109,7 @@ function PageTitle() {
     '/consommateurs': 'Demandeurs / Consommateurs',
     '/stagiaires': 'Stagiaires',
     '/etat-besoins': 'État des besoins',
+    '/rapports': 'Rapports réglementaires',
     '/fiches-reparation': 'Fiches de réparation',
     '/vehicules': 'Gestion des véhicules',
     '/bons-approvisionnement': 'Approvisionnement carburant',
@@ -200,6 +202,7 @@ function AppLayout() {
             <NavItem to="/etat-besoins" icon={<AlertTriangle size={16} />}>État des besoins</NavItem>
             <NavItem to="/inventaire" icon={<ClipboardList size={16} />}>Biens inventaire</NavItem>
             <NavItem to="/etats" icon={<FileText size={16} />}>États &amp; fiches</NavItem>
+            <NavItem to="/rapports" icon={<FileText size={16} />}>Rapports CFPA</NavItem>
 
             <SectionLabel>Réparations</SectionLabel>
             <NavItem to="/fiches-reparation" icon={<Wrench size={16} />}>Fiches RSR</NavItem>
@@ -302,6 +305,7 @@ function AppLayout() {
               <Route path="/stagiaires" element={<StagiaireListe />} />
               <Route path="/grand-livre" element={<BienInventaireListe />} />
               <Route path="/etat-besoins" element={<EtatDesBesoins />} />
+              <Route path="/rapports" element={<RapportsPage />} />
               <Route path="/etats" element={<EtatsPage />} />
               <Route path="/" element={<Dashboard />} />
             </Routes>
