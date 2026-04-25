@@ -3,6 +3,7 @@ import { articleApi } from '../../api/commercialApi'
 import { inventaireApi } from '../../api/inventaireApi'
 import type { Article } from '../../types/commercial'
 import type { BienInventaire } from '../../types/inventaire'
+import PdfPreviewModal from '../../components/PdfPreviewModal'
 
 const BASE = '/api/etats'
 
@@ -13,10 +14,6 @@ function today() {
 function firstOfMonth() {
   const d = new Date()
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`
-}
-
-function openPdf(url: string) {
-  window.open(url, '_blank')
 }
 
 function buildUrl(base: string, params: Record<string, string | number | number[]>): string {
@@ -63,35 +60,39 @@ function Card({ title, ref: refCode, children }: { title: string; ref?: string; 
   )
 }
 
-function BtnPdf({ onClick, label = 'Imprimer PDF' }: { onClick: () => void; label?: string }) {
+function BtnApercu({ onClick, disabled = false }: { onClick: () => void; disabled?: boolean }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="px-4 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700 flex items-center gap-2"
+      disabled={disabled}
+      className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
     >
-      <span>⬇</span> {label}
+      <span>👁</span> Aperçu
     </button>
   )
 }
 
 export default function EtatsPage() {
-  // shared data
   const [articles, setArticles] = useState<Article[]>([])
   const [biens, setBiens] = useState<BienInventaire[]>([])
 
+  // Modale PDF
+  const [pdfUrl,   setPdfUrl]   = useState<string | null>(null)
+  const [pdfTitle, setPdfTitle] = useState('')
+
   // BJR
   const [bjrDebut, setBjrDebut] = useState(firstOfMonth())
-  const [bjrFin, setBjrFin] = useState(today())
+  const [bjrFin, setBjrFin]     = useState(today())
 
   // EJS
   const [ejsDebut, setEjsDebut] = useState(firstOfMonth())
-  const [ejsFin, setEjsFin] = useState(today())
+  const [ejsFin, setEjsFin]     = useState(today())
 
   // État des Besoins
   const [section, setSection] = useState('')
-  const [agent, setAgent] = useState('')
-  const [annee, setAnnee] = useState(new Date().getFullYear())
+  const [agent, setAgent]     = useState('')
+  const [annee, setAnnee]     = useState(new Date().getFullYear())
 
   // FC/MC
   const [articleId, setArticleId] = useState<number | ''>('')
@@ -100,27 +101,32 @@ export default function EtatsPage() {
   const [bienId, setBienId] = useState<number | ''>('')
 
   // PV Cession/Transfert
-  const [pvCessionDir, setPvCessionDir] = useState('')
+  const [pvCessionDir,  setPvCessionDir]  = useState('')
   const [pvCessionDest, setPvCessionDest] = useState('')
-  const [pvCessionIds, setPvCessionIds] = useState<number[]>([])
+  const [pvCessionIds,  setPvCessionIds]  = useState<number[]>([])
 
   // PV Perte/Vol
-  const [pvPvDir, setPvPvDir] = useState('')
+  const [pvPvDir,       setPvPvDir]       = useState('')
   const [pvPvIntendant, setPvPvIntendant] = useState('')
-  const [pvPvMag, setPvPvMag] = useState('')
-  const [pvPvCirc, setPvPvCirc] = useState('')
-  const [pvPvIds, setPvPvIds] = useState<number[]>([])
+  const [pvPvMag,       setPvPvMag]       = useState('')
+  const [pvPvCirc,      setPvPvCirc]      = useState('')
+  const [pvPvIds,       setPvPvIds]       = useState<number[]>([])
 
   // PV Réforme
-  const [pvRefDir, setPvRefDir] = useState('')
+  const [pvRefDir,  setPvRefDir]  = useState('')
   const [pvRefCfpa, setPvRefCfpa] = useState('')
   const [pvRefIntd, setPvRefIntd] = useState('')
-  const [pvRefMag, setPvRefMag] = useState('')
+  const [pvRefMag,  setPvRefMag]  = useState('')
 
   useEffect(() => {
     articleApi.findAll().then(setArticles).catch(() => {})
     inventaireApi.findAll().then(setBiens).catch(() => {})
   }, [])
+
+  function apercu(url: string, title: string) {
+    setPdfUrl(url)
+    setPdfTitle(title)
+  }
 
   return (
     <div className="max-w-3xl">
@@ -139,7 +145,7 @@ export default function EtatsPage() {
             <input type="date" value={bjrFin} onChange={e => setBjrFin(e.target.value)}
               className="border border-gray-300 rounded px-3 py-1.5 text-sm" />
           </div>
-          <BtnPdf onClick={() => openPdf(`${BASE}/bjr?dateDebut=${bjrDebut}&dateFin=${bjrFin}`)} />
+          <BtnApercu onClick={() => apercu(`${BASE}/bjr?dateDebut=${bjrDebut}&dateFin=${bjrFin}`, 'Bulletin Journalier de Réception')} />
         </div>
       </Card>
 
@@ -156,7 +162,7 @@ export default function EtatsPage() {
             <input type="date" value={ejsFin} onChange={e => setEjsFin(e.target.value)}
               className="border border-gray-300 rounded px-3 py-1.5 text-sm" />
           </div>
-          <BtnPdf onClick={() => openPdf(`${BASE}/ejs?dateDebut=${ejsDebut}&dateFin=${ejsFin}`)} />
+          <BtnApercu onClick={() => apercu(`${BASE}/ejs?dateDebut=${ejsDebut}&dateFin=${ejsFin}`, 'État Journalier des Sorties')} />
         </div>
       </Card>
 
@@ -165,7 +171,7 @@ export default function EtatsPage() {
         <p className="text-sm text-gray-500 mb-3">
           Liste les biens dont le statut est <em>Réformé</em> ou l'état <em>Hors service</em>.
         </p>
-        <BtnPdf onClick={() => openPdf(`${BASE}/reforme`)} />
+        <BtnApercu onClick={() => apercu(`${BASE}/reforme`, "État du Matériel à Proposer à la Réforme")} />
       </Card>
 
       {/* 4. État des Besoins */}
@@ -188,8 +194,8 @@ export default function EtatsPage() {
             <input type="number" value={annee} onChange={e => setAnnee(Number(e.target.value))}
               className="border border-gray-300 rounded px-3 py-1.5 text-sm w-24" />
           </div>
-          <BtnPdf onClick={() =>
-            openPdf(`${BASE}/besoins?section=${encodeURIComponent(section)}&agent=${encodeURIComponent(agent)}&annee=${annee}`)
+          <BtnApercu onClick={() =>
+            apercu(`${BASE}/besoins?section=${encodeURIComponent(section)}&agent=${encodeURIComponent(agent)}&annee=${annee}`, "État des Besoins")
           } />
         </div>
       </Card>
@@ -207,9 +213,9 @@ export default function EtatsPage() {
               ))}
             </select>
           </div>
-          <BtnPdf
-            onClick={() => articleId !== '' && openPdf(`${BASE}/fc-mc/${articleId}`)}
-            label={articleId === '' ? 'Sélectionner un article' : 'Imprimer PDF'}
+          <BtnApercu
+            disabled={articleId === ''}
+            onClick={() => articleId !== '' && apercu(`${BASE}/fc-mc/${articleId}`, 'Fichier Central — Matériel Consomptible')}
           />
         </div>
       </Card>
@@ -227,9 +233,9 @@ export default function EtatsPage() {
               ))}
             </select>
           </div>
-          <BtnPdf
-            onClick={() => bienId !== '' && openPdf(`${BASE}/fc-mnc/${bienId}`)}
-            label={bienId === '' ? 'Sélectionner un bien' : 'Imprimer PDF'}
+          <BtnApercu
+            disabled={bienId === ''}
+            onClick={() => bienId !== '' && apercu(`${BASE}/fc-mnc/${bienId}`, 'Fichier Central — Matériel Non Consomptible')}
           />
         </div>
       </Card>
@@ -239,7 +245,7 @@ export default function EtatsPage() {
         <p className="text-sm text-gray-500 mb-3">
           Liste tous les biens avec N° inventaire, désignation, marque, état de conservation, emplacement et date d'entrée.
         </p>
-        <BtnPdf onClick={() => openPdf(`${BASE}/rsr`)} />
+        <BtnApercu onClick={() => apercu(`${BASE}/rsr`, 'Registre de Suivi des Ressources (RSR)')} />
       </Card>
 
       {/* 8. Registre Matière */}
@@ -247,7 +253,7 @@ export default function EtatsPage() {
         <p className="text-sm text-gray-500 mb-3">
           Tableau avec N° inventaire, désignation, marque & série, date d'entrée, mode d'acquisition, prix d'achat, affectation, date/motif de sortie.
         </p>
-        <BtnPdf onClick={() => openPdf(`${BASE}/registre-matiere`)} />
+        <BtnApercu onClick={() => apercu(`${BASE}/registre-matiere`, 'Registre Matière')} />
       </Card>
 
       {/* 9. RGBI */}
@@ -255,10 +261,10 @@ export default function EtatsPage() {
         <p className="text-sm text-gray-500 mb-3">
           Liste les biens actifs avec désignation, consistance, mode d'acquisition, titre de propriété, valeur initiale.
         </p>
-        <BtnPdf onClick={() => openPdf(`${BASE}/rgbi`)} />
+        <BtnApercu onClick={() => apercu(`${BASE}/rgbi`, 'Registre Général des Biens Immobiliers (RGBI)')} />
       </Card>
 
-      {/* 11. PV Cession/Transfert */}
+      {/* 10. PV Cession/Transfert */}
       <Card title="Procès-Verbal de Cession / Transfert" ref="MFP/IG/CMM/PV/C/T/07">
         <div className="flex flex-wrap gap-3 mb-3">
           <div>
@@ -276,16 +282,16 @@ export default function EtatsPage() {
           <label className="block text-xs text-gray-600 mb-1">Biens concernés ({pvCessionIds.length} sélectionné(s))</label>
           <BienCheckList biens={biens} selected={pvCessionIds} onChange={setPvCessionIds} />
         </div>
-        <BtnPdf onClick={() =>
-          openPdf(buildUrl(`${BASE}/pv-cession`, {
+        <BtnApercu onClick={() =>
+          apercu(buildUrl(`${BASE}/pv-cession`, {
             directeur: pvCessionDir,
             cfpDestination: pvCessionDest,
             bienIds: pvCessionIds,
-          }))
+          }), 'Procès-Verbal de Cession / Transfert')
         } />
       </Card>
 
-      {/* 8. PV Perte/Vol */}
+      {/* 11. PV Perte/Vol */}
       <Card title="Procès-Verbal de Perte / Vol" ref="MFP/IG/CMM/PVPV/08">
         <div className="flex flex-wrap gap-3 mb-3">
           <div>
@@ -314,18 +320,18 @@ export default function EtatsPage() {
           <label className="block text-xs text-gray-600 mb-1">Articles / biens ({pvPvIds.length} sélectionné(s))</label>
           <BienCheckList biens={biens} selected={pvPvIds} onChange={setPvPvIds} />
         </div>
-        <BtnPdf onClick={() =>
-          openPdf(buildUrl(`${BASE}/pv-perte-vol`, {
+        <BtnApercu onClick={() =>
+          apercu(buildUrl(`${BASE}/pv-perte-vol`, {
             directeur: pvPvDir,
             intendant: pvPvIntendant,
             magasinier: pvPvMag,
             circonstances: pvPvCirc,
             bienIds: pvPvIds,
-          }))
+          }), 'Procès-Verbal de Perte / Vol')
         } />
       </Card>
 
-      {/* 9. PV Réforme */}
+      {/* 12. PV Réforme */}
       <Card title="Procès-Verbal de Réforme" ref="MFP/IG/CMM/PVR/10">
         <p className="text-sm text-gray-500 mb-3">
           Liste automatiquement tous les biens dont le statut est <em>Réformé</em>.
@@ -352,15 +358,22 @@ export default function EtatsPage() {
               className="border border-gray-300 rounded px-3 py-1.5 text-sm w-44" />
           </div>
         </div>
-        <BtnPdf onClick={() =>
-          openPdf(buildUrl(`${BASE}/pv-reforme`, {
+        <BtnApercu onClick={() =>
+          apercu(buildUrl(`${BASE}/pv-reforme`, {
             directeur: pvRefDir,
             cfpa: pvRefCfpa,
             intendant: pvRefIntd,
             magasinier: pvRefMag,
-          }))
+          }), 'Procès-Verbal de Réforme')
         } />
       </Card>
+
+      {/* Modale PDF — une seule instance pour toute la page */}
+      <PdfPreviewModal
+        url={pdfUrl}
+        title={pdfTitle}
+        onClose={() => setPdfUrl(null)}
+      />
     </div>
   )
 }
