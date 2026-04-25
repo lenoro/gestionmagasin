@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface PdfPreviewModalProps {
   url: string | null
@@ -7,6 +7,42 @@ interface PdfPreviewModalProps {
 }
 
 export default function PdfPreviewModal({ url, title, onClose }: PdfPreviewModalProps) {
+  const [blobUrl, setBlobUrl] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  // Charger le PDF comme blob pour contourner le plugin Acrobat
+  useEffect(() => {
+    if (!url) {
+      setBlobUrl(null)
+      return
+    }
+
+    let objectUrl: string | null = null
+    setLoading(true)
+
+    const token = localStorage.getItem('gs_token')
+    fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then(r => r.blob())
+      .then(blob => {
+        objectUrl = URL.createObjectURL(blob)
+        setBlobUrl(objectUrl)
+        setLoading(false)
+      })
+      .catch(() => {
+        // Fallback : URL directe si le fetch échoue
+        setBlobUrl(url)
+        setLoading(false)
+      })
+
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+      setBlobUrl(null)
+    }
+  }, [url])
+
+  // Touche Escape
   useEffect(() => {
     if (!url) return
     function onKey(e: KeyboardEvent) {
@@ -40,12 +76,15 @@ export default function PdfPreviewModal({ url, title, onClose }: PdfPreviewModal
           </button>
         </div>
 
-        {/* Corps — iframe PDF */}
-        <iframe
-          src={url}
-          className="flex-1 w-full border-0"
-          title={title}
-        />
+        {/* Corps — iframe PDF (blob URL contourne Acrobat) */}
+        {loading
+          ? <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">Chargement…</div>
+          : <iframe
+              src={blobUrl ?? undefined}
+              className="flex-1 w-full border-0"
+              title={title}
+            />
+        }
 
         {/* Pied */}
         <div className="flex justify-between items-center px-4 py-3 border-t bg-gray-50 rounded-b-lg gap-3">
