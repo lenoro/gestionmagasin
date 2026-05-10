@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+
+  db:
+    image: mysql:8.0
+    container_name: facture_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: Facture2026!
+      MYSQL_DATABASE: gestion_facture
+      MYSQL_USER: facture_user
+      MYSQL_PASSWORD: Facture2026!
+    volumes:
+      - facture_db_data:/var/lib/mysql
+    networks:
+      - facture_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: facture_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/gestion_facture?useSSL=false&serverTimezone=UTC&characterEncoding=utf8&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: facture_user
+      SPRING_DATASOURCE_PASSWORD: Facture2026!
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    networks:
+      - facture_net
+
+  frontend:
+    build: ./frontend
+    container_name: facture_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - facture_net
+      - proxy_net
+
+volumes:
+  facture_db_data:
+
+networks:
+  facture_net:
+    driver: bridge
+  proxy_net:
+    external: true

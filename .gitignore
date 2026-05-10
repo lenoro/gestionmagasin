@@ -1,0 +1,15 @@
+# Backend
+backend/target/
+backend/.classpath
+backend/.project
+backend/.factorypath
+backend/.settings/
+
+# Frontend
+frontend/node_modules/
+frontend/build/
+
+# Divers
+*.zip
+.env
+*.log
